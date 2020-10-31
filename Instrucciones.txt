@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 Aqui es donde estaran las instrucciones xd
 
 A ver este ya es el cambio definitvooo asjkdfhaskdjhfasjkdf
 sadfasdfsa
 asdfas
+=======
+Aquí es donde iran las instrucciones
+
+Ahora este es otro cambio
+>>>>>>> 38dbc13174d34ee4ecd3f660580b80f108f2b9b2
