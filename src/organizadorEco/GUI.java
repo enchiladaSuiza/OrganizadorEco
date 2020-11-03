@@ -25,6 +25,7 @@ public class GUI {
 
         JLabel titulo = new JLabel(tituloStr);
         titulo.setFont(new Font("Montserrat", Font.PLAIN, 20));
+        titulo.setForeground(Color.white);
         titulo.setVerticalAlignment(JLabel.CENTER);
         titulo.setHorizontalAlignment(JLabel.CENTER);
         titulo.setForeground(Color.black);
