@@ -1,14 +1,12 @@
 package organizadorEco;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GUI {
 
-
-    private String tituloStr = "Just do that.";
 
     public GUI() {
 
@@ -28,6 +26,7 @@ public class GUI {
         header.setLayout(new BorderLayout(10, 10));
 
         //Texto del titulo
+        String tituloStr = "Just do that.";
         JLabel titulo = new JLabel(tituloStr);
         titulo.setFont(new Font("Montserrat", Font.PLAIN, 20));
         titulo.setVerticalAlignment(JLabel.CENTER);
@@ -105,9 +104,34 @@ public class GUI {
            footer.add(imagen);
         }
 
+        //Panel Principal
+        JPanel principal = new JPanel();
+        principal.setBackground(Color.YELLOW);
+        principal.setPreferredSize(new Dimension(350, 480));
+        principal.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        //Panel Tasks
+        JPanel task = new JPanel();
+        task.setBackground(new Color(0, 194, 0));
+        task.setPreferredSize(new Dimension(300, 80));
+        task.setLayout(new BorderLayout());
+
+        //Add Button
+        JButton addOne = new JButton();
+        addOne.setIcon(new ImageIcon("images/anadir.png"));
+        addOne.setBackground(null);
+        addOne.setBorder(null);
+
+        addOne.addActionListener(e -> {
+            System.out.println("Agregando Task...");
+            principal.add(task);
+        });
+        principal.add(addOne);
+
         //Adicion de los elementos al frame
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
+        frame.add(principal, BorderLayout.CENTER);
         frame.setVisible(true);
 
     }
