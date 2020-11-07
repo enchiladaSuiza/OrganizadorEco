@@ -41,22 +41,23 @@ public class GUI {
         footer.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 15));
 
         //Creacion de los "Botones"
-        JLabel hechos = new JLabel();
+        
+        JButton hechos = new JButton();
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
-        JLabel calendario = new JLabel();
+        JButton calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
-        JLabel home = new JLabel();
+        JButton home = new JButton();
         home.setIcon(new ImageIcon("imagenes/home.png"));
-        JLabel basura = new JLabel();
+        JButton basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
-        JLabel config = new JLabel();
+        JButton config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
 
-        JLabel[] imagenes = {hechos, calendario, home, basura, config};
+        JButton[] imagenes = {hechos, calendario, home, basura, config};
 
         //Adicion de los botones al footer
-        for (JLabel imagen : imagenes) {
-            footer.add(imagen);
+        for (JButton imagen : imagenes) {
+           footer.add(imagen);
         }
 
         //Adicion de los elementos al frame
