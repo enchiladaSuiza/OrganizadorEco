@@ -3,6 +3,7 @@ package organizadorEco;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.*;
 
 public class GUI {
 
@@ -45,26 +46,56 @@ public class GUI {
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
+        hechos.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Hola, esta es la accion del boton de hechos ao");
+        	}
+        });
         
         JButton calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
+        calendario.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Hola, esta es la accion del boton de calendario ao x2");
+        	}
+        });
         
         JButton home = new JButton();
         home.setIcon(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
+        home.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Hola, esta es la accion del boton de home ao x3");
+        	}
+        });
         
         JButton basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
+        basura.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Hola, esta es la accion del boton de basura ao x4");
+        	}
+        });
         
         JButton config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
+        config.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000");
+        	}
+        });
 
         JButton[] imagenes = {hechos, calendario, home, basura, config};
 
