@@ -41,4 +41,14 @@ public abstract class Organizador {
             }
         }
     }
+
+    public static void eliminarPermanente(String descripcion) {
+        for (int i = 0; i < eliminados.size(); i++) {
+            Pendiente pend = eliminados.get(i);
+            if (pend.getDescripcion().equals(descripcion)) {
+                eliminados.remove(pend);
+                break;
+            }
+        }
+    }
 }

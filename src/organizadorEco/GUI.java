@@ -124,7 +124,6 @@ public class GUI {
     }
 
     private class TaskPanel extends JPanel implements ActionListener {
-        ArrayList<PendientePanel> paneles;
         JButton addOne;
         JPanel escritura;
         JTextField campo;
@@ -133,17 +132,12 @@ public class GUI {
             this.setBackground(new Color(0x27AE6A));
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-            paneles = new ArrayList<>();
-            for (int i = 0; i < Organizador.pendientes.size(); i++) {
-                String desc = Organizador.pendientes.get(i).getDescripcion();
-                paneles.add(new PendientePanel(desc));
-            }
             addOne = new JButton();
             addOne.setIcon(new ImageIcon("imagenes/plus.png"));
             addOne.setBackground(null);
             addOne.setBorder(null);
             addOne.addActionListener(this);
-            this.add(addOne);
+            actualizarPaneles();
         }
 
         @Override
@@ -158,10 +152,7 @@ public class GUI {
             campo.addActionListener(f -> {
                 String texto = campo.getText();
                 Organizador.agregarPendiente(texto);
-                int indice = Organizador.pendientes.size() - 1;
-                PendientePanel pendiente = new PendientePanel(texto);
-                paneles.add(pendiente);
-                actualizarPaneles();
+                this.actualizarPaneles();
             });
             escritura.add(campo);
             this.add(escritura);
@@ -171,7 +162,8 @@ public class GUI {
 
         private void actualizarPaneles() {
             this.removeAll();
-            for (JPanel panel : paneles) {
+            for (Pendiente pend : Organizador.pendientes) {
+                PendientePanel panel = new PendientePanel(pend.getDescripcion());
                 this.add(panel);
             }
             this.add(addOne);
@@ -213,8 +205,7 @@ public class GUI {
                 eliminar.setBorder(null);
                 eliminar.addActionListener(e -> {
                     deleted.borrar(area.getText());
-                    paneles.remove(this);
-                    task.actualizarPaneles();
+                    actualizarPaneles();
                 });
 
                 confirmar = new JButton();
@@ -224,7 +215,6 @@ public class GUI {
                 confirmar.setBorder(null);
                 confirmar.addActionListener(e -> {
                     done.agregar(area.getText());
-                    paneles.remove(this);
                     task.actualizarPaneles();
                 });
 
@@ -279,33 +269,25 @@ public class GUI {
     private class DonePanel extends JPanel {
         ArrayList<PendienteDone> hechos;
         JLabel puntaje;
-        // JLabel icono;
 
         DonePanel() {
             this.setBackground(new Color(0x27AE6A));
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-            // icono = new JLabel();
-            // icono.setIcon(new ImageIcon("imagenes/checkmark.png"));
-            // icono.setPreferredSize(new Dimension(200, 32));
-            // this.add(icono);
             hechos = new ArrayList<>();
-            puntaje = new JLabel(Integer.toString(hechos.size()));
+            puntaje = new JLabel(Integer.toString(Organizador.realizados.size()));
             puntaje.setFont(new Font(fuente, Font.BOLD, 18));
             puntaje.setForeground(Color.white);
-            for (int i = 0; i < Organizador.realizados.size(); i++) {
-                String desc = Organizador.realizados.get(i).getDescripcion();
-                hechos.add(new PendienteDone(desc));
-                actualizarPaneles();
-            }
-            this.add(puntaje);
+            actualizarPaneles();
         }
 
         private void actualizarPaneles() {
             this.removeAll();
-            // this.add(icono);
-            for (JPanel panel : hechos) {
-                this.add(panel);
+            hechos.clear();
+            for (Pendiente pend : Organizador.realizados) {
+                PendienteDone hecho = new PendienteDone(pend.getDescripcion());
+                hechos.add(hecho);
+                this.add(hecho);
                 this.add(new JLabel(new ImageIcon("imagenes/medal.png")));
             }
             puntaje.setText(Integer.toString(hechos.size()));
@@ -341,7 +323,7 @@ public class GUI {
     }
 
     private class DeletedPanel extends JPanel {
-        ArrayList<PendienteDeleted> basura = new ArrayList<>();
+        ArrayList<PendienteDeleted> basura;
 
         DeletedPanel() {
             this.setBackground(new Color(0x27AE6A));
@@ -399,10 +381,21 @@ public class GUI {
                 recuperar = new JButton(new ImageIcon("imagenes/refresh.png"));
                 recuperar.setBackground(null);
                 recuperar.setBorder(null);
+                recuperar.addActionListener(e -> {
+                    Organizador.agregarPendiente(area.getText());
+                    basura.remove(this);
+                    actualizarPaneles();
+                    task.actualizarPaneles();
+                });
 
                 descartar = new JButton(new ImageIcon("imagenes/close.png"));
                 descartar.setBackground(null);
                 descartar.setBorder(null);
+                descartar.addActionListener(e -> {
+                    Organizador.eliminarPermanente(area.getText());
+                    basura.remove(this);
+                    actualizarPaneles();
+                });
 
                 this.add(label);
                 this.addMouseListener(this);
