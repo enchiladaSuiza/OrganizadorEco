@@ -143,10 +143,10 @@ public class GUI {
         public void actionPerformed(ActionEvent e) {
             this.remove(addOne);
             escritura = new JPanel();
-            escritura.setPreferredSize(new Dimension(300, 50));
+            escritura.setPreferredSize(new Dimension(300, 40));
             escritura.setBackground(new Color(0xAFF478));
             campo = new JTextField();
-            campo.setPreferredSize(new Dimension(280, 40));
+            campo.setPreferredSize(new Dimension(280, 30));
             campo.setFont(new Font(fuente, Font.PLAIN, 12));
             campo.addActionListener(f -> {
                 String texto = campo.getText();
@@ -174,10 +174,8 @@ public class GUI {
 
         private class PendientePanel extends JPanel implements MouseListener {
             final int WIDTH = 300;
-            final int HEIGHT = 50;
-            final int HGAP = 12;
-            final int VGAP = 15;
-            final int COLS = 17;
+            final int HEIGHT = 40;
+            final int SIZE = 15;
             boolean clickeado = false;
             JLabel label;
             JTextArea area;
@@ -185,23 +183,21 @@ public class GUI {
 
             PendientePanel(String descripcion, int indice) {
                 this.indice = indice;
-                this.setLayout(new FlowLayout(FlowLayout.LEFT, HGAP, VGAP));
+                this.setLayout(null);
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
-                label = new JLabel(descripcion, SwingConstants.LEFT);
-                label.setVerticalAlignment(SwingConstants.CENTER);
-                label.setFont(new Font(fuente, Font.PLAIN, 15));
-                label.setPreferredSize(new Dimension(250, 20));
+                label = new JLabel(descripcion);
+                label.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                label.setBounds(10, 10, 280, 20);
                 area = new JTextArea();
-                area.setFont(new Font(fuente, Font.PLAIN, 15));
-                // area.setBackground(new Color(0xAFF478));
+                area.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 area.setText(descripcion);
-                area.setColumns(COLS);
                 area.setWrapStyleWord(true);
                 area.setLineWrap(true);
+                area.setBounds(10, 10, 280, 80);
                 this.add(label);
-                this.add(area);
                 this.addMouseListener(this);
+
             }
 
             @Override
@@ -210,7 +206,7 @@ public class GUI {
                 if (clickeado) {
                     this.remove(label);
                     this.add(area);
-                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT + area.getHeight()));
+                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 100));
                 } else {
                     this.remove(area);
                     this.add(label);
