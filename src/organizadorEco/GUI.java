@@ -23,6 +23,9 @@ public class GUI {
     JPanel principal;
     String fuente;
 
+    TaskPanel task;
+    DonePanel done;
+
     public GUI() {
 
     	//Rectangulo de la aplicación
@@ -33,6 +36,21 @@ public class GUI {
         frame.getContentPane().setBackground(new Color(0x27AE60));
         frame.setLayout(new BorderLayout(0, 0));
         frame.setLocationRelativeTo(null);
+
+        //Panel Principal
+        principal = new JPanel();
+        principal.setBackground(new Color(0x27AE60));
+        principal.setPreferredSize(new Dimension(300, 100));
+        CardLayout pantallas = new CardLayout();
+        principal.setLayout(pantallas);
+
+        // Haciedno las cartas
+        task = new TaskPanel();
+        done = new DonePanel();
+        principal.add(task, "task");
+        principal.add(done, "done");
+
+        pantallas.show(principal, "task");
 
         //Recuadro que contiene el titulo
         header = new JPanel();
@@ -63,7 +81,7 @@ public class GUI {
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
-        hechos.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de hechos ao"));
+        hechos.addActionListener(e -> pantallas.show(principal, "done"));
         
         calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
@@ -75,7 +93,7 @@ public class GUI {
         home.setIcon(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
-        home.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de home ao x3"));
+        home.addActionListener(e -> pantallas.show(principal, "task"));
         
         basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
@@ -96,18 +114,6 @@ public class GUI {
            footer.add(imagen);
         }
 
-        //Panel Principal
-        principal = new JPanel();
-        principal.setBackground(new Color(0x27AE60));
-        principal.setPreferredSize(new Dimension(300, 100));
-        principal.setLayout(new CardLayout());
-
-        // Panel tasks
-        TaskPanel task = new TaskPanel();
-
-        // Adición de las "cartas" principal
-        principal.add(task);
-
         //Adición de los elementos al frame
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
@@ -123,13 +129,12 @@ public class GUI {
 
         TaskPanel() {
             this.setBackground(new Color(0x27AE6A));
-            this.setSize(new Dimension(200, 100));
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
             paneles = new ArrayList<>();
             for (int i = 0; i < Organizador.pendientes.size(); i++) {
                 String desc = Organizador.pendientes.get(i).getDescripcion();
-                paneles.add(new PendientePanel(desc, i));
+                paneles.add(new PendientePanel(desc));
             }
             addOne = new JButton();
             addOne.setIcon(new ImageIcon("imagenes/plus.png"));
@@ -152,7 +157,7 @@ public class GUI {
                 String texto = campo.getText();
                 Organizador.agregarPendiente(texto);
                 int indice = Organizador.pendientes.size() - 1;
-                PendientePanel pendiente = new PendientePanel(texto, indice);
+                PendientePanel pendiente = new PendientePanel(texto);
                 paneles.add(pendiente);
                 actualizarPaneles();
             });
@@ -181,10 +186,8 @@ public class GUI {
             JButton eliminar;
             JButton confirmar;
             JButton guardar;
-            int indice;
 
-            PendientePanel(String descripcion, int indice) {
-                this.indice = indice;
+            PendientePanel(String descripcion) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
@@ -193,7 +196,6 @@ public class GUI {
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 label.setVerticalAlignment(SwingConstants.CENTER);
                 label.setPreferredSize(new Dimension(285, 20));
-                // label.setBackground(Color.white);
 
                 area = new JTextArea();
                 area.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -213,6 +215,11 @@ public class GUI {
                 confirmar.setIcon(checkmark);
                 confirmar.setBackground(null);
                 confirmar.setBorder(null);
+                confirmar.addActionListener(e -> {
+                    done.agregar(area.getText());
+                    paneles.remove(this);
+                    task.actualizarPaneles();
+                });
 
                 guardar = new JButton();
                 ImageIcon save = new ImageIcon("imagenes/save.png");
@@ -227,7 +234,7 @@ public class GUI {
                     this.add(label);
                     this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                     label.setText(area.getText());
-                    Organizador.modificarPendiente(area.getText(), indice);
+                    Organizador.modificarPendiente(descripcion, area.getText());
                     revalidate();
                     repaint();
                 });
@@ -259,6 +266,69 @@ public class GUI {
 
             @Override
             public void mouseExited(MouseEvent e) { }
+        }
+    }
+
+    private class DonePanel extends JPanel {
+        ArrayList<PendienteDone> hechos;
+        JLabel puntaje;
+        // JLabel icono;
+
+        DonePanel() {
+            this.setBackground(new Color(0x27AE6A));
+            this.setOpaque(false);
+            this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+            // icono = new JLabel();
+            // icono.setIcon(new ImageIcon("imagenes/checkmark.png"));
+            // icono.setPreferredSize(new Dimension(200, 32));
+            // this.add(icono);
+            hechos = new ArrayList<>();
+            puntaje = new JLabel(Integer.toString(hechos.size()));
+            puntaje.setFont(new Font(fuente, Font.BOLD, 18));
+            puntaje.setForeground(Color.white);
+            for (int i = 0; i < Organizador.realizados.size(); i++) {
+                String desc = Organizador.realizados.get(i).getDescripcion();
+                hechos.add(new PendienteDone(desc));
+                actualizarPaneles();
+            }
+            this.add(puntaje);
+        }
+
+        private void actualizarPaneles() {
+            this.removeAll();
+            // this.add(icono);
+            for (JPanel panel : hechos) {
+                this.add(panel);
+                this.add(new JLabel(new ImageIcon("imagenes/medal.png")));
+            }
+            puntaje.setText(Integer.toString(hechos.size()));
+            this.add(puntaje);
+            revalidate();
+            repaint();
+        }
+
+        private void agregar(String desc) {
+            PendienteDone hecho = new PendienteDone(desc);
+            hechos.add(hecho);
+            actualizarPaneles();
+        }
+
+        private class PendienteDone extends JPanel {
+            final int WIDTH = 250;
+            final int HEIGHT = 40;
+            final int SIZE = 15;
+            JLabel label;
+
+            PendienteDone(String descripcion) {
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                this.setBackground(new Color(0xAFF478));
+                label = new JLabel(descripcion, SwingConstants.CENTER);
+                label.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                label.setVerticalAlignment(SwingConstants.CENTER);
+                label.setPreferredSize(new Dimension(285, 20));
+                this.add(label);
+            }
         }
     }
 }
