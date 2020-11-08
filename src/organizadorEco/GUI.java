@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class GUI {
-
     JFrame frame;
     JPanel header;
     String tituloStr;
@@ -25,6 +24,7 @@ public class GUI {
 
     TaskPanel task;
     DonePanel done;
+    DeletedPanel deleted;
 
     public GUI() {
 
@@ -47,8 +47,10 @@ public class GUI {
         // Haciedno las cartas
         task = new TaskPanel();
         done = new DonePanel();
+        deleted = new DeletedPanel();
         principal.add(task, "task");
         principal.add(done, "done");
+        principal.add(deleted, "deleted");
 
         pantallas.show(principal, "task");
 
@@ -99,7 +101,7 @@ public class GUI {
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
-        basura.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de basura ao x4"));
+        basura.addActionListener(e -> pantallas.show(principal, "deleted"));
         
         config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
@@ -209,6 +211,11 @@ public class GUI {
                 eliminar.setIcon(remove);
                 eliminar.setBackground(null);
                 eliminar.setBorder(null);
+                eliminar.addActionListener(e -> {
+                    deleted.borrar(area.getText());
+                    paneles.remove(this);
+                    task.actualizarPaneles();
+                });
 
                 confirmar = new JButton();
                 ImageIcon checkmark = new ImageIcon("imagenes/checkmark.png");
@@ -309,6 +316,7 @@ public class GUI {
 
         private void agregar(String desc) {
             PendienteDone hecho = new PendienteDone(desc);
+            Organizador.marcarCompletado(desc);
             hechos.add(hecho);
             actualizarPaneles();
         }
@@ -329,6 +337,99 @@ public class GUI {
                 label.setPreferredSize(new Dimension(285, 20));
                 this.add(label);
             }
+        }
+    }
+
+    private class DeletedPanel extends JPanel {
+        ArrayList<PendienteDeleted> basura = new ArrayList<>();
+
+        DeletedPanel() {
+            this.setBackground(new Color(0x27AE6A));
+            this.setOpaque(false);
+            this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+            basura = new ArrayList<>();
+            for (int i = 0; i < Organizador.eliminados.size(); i++) {
+                String desc = Organizador.eliminados.get(i).getDescripcion();
+                basura.add(new PendienteDeleted(desc));
+            }
+        }
+
+        private void borrar(String desc) {
+            PendienteDeleted borrado = new PendienteDeleted(desc);
+            Organizador.eliminarPendiente(desc);
+            basura.add(borrado);
+            actualizarPaneles();
+        }
+
+        private void actualizarPaneles() {
+            this.removeAll();
+            for (JPanel panel : basura) {
+                this.add(panel);
+            }
+            revalidate();
+            repaint();
+        }
+
+        private class PendienteDeleted extends JPanel implements MouseListener {
+            final int WIDTH = 300;
+            final int HEIGHT = 40;
+            final int SIZE = 15;
+            JLabel label;
+            JTextArea area;
+            JButton recuperar;
+            JButton descartar;
+
+            PendienteDeleted(String descripcion) {
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 60, 10));
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                this.setBackground(new Color(0xAFF478));
+
+                label = new JLabel(descripcion, SwingConstants.CENTER);
+                label.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                label.setVerticalAlignment(SwingConstants.CENTER);
+                label.setPreferredSize(new Dimension(285, 20));
+
+                area = new JTextArea();
+                area.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                area.setText(descripcion);
+                area.setWrapStyleWord(true);
+                area.setLineWrap(true);
+                area.setPreferredSize(new Dimension(280, 95));
+
+                recuperar = new JButton(new ImageIcon("imagenes/refresh.png"));
+                recuperar.setBackground(null);
+                recuperar.setBorder(null);
+
+                descartar = new JButton(new ImageIcon("imagenes/close.png"));
+                descartar.setBackground(null);
+                descartar.setBorder(null);
+
+                this.add(label);
+                this.addMouseListener(this);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
+                this.remove(label);
+                this.add(area);
+                this.add(recuperar);
+                this.add(descartar);
+                revalidate();
+                repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) { }
+
+            @Override
+            public void mouseReleased(MouseEvent e) { }
+
+            @Override
+            public void mouseEntered(MouseEvent e) { }
+
+            @Override
+            public void mouseExited(MouseEvent e) { }
         }
     }
 }
