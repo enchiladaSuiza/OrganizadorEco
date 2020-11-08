@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class GUI {
 
@@ -18,6 +19,7 @@ public class GUI {
     JButton basura;
     JButton config;
     JPanel principal;
+    Font fuente;
 
     public GUI() {
 
@@ -36,10 +38,13 @@ public class GUI {
         header.setPreferredSize(new Dimension(350, 60));
         header.setLayout(new BorderLayout(0, 0));
 
+        // Fuente
+        fuente = new Font("Montserrat", Font.BOLD, 20);
+
         //Texto del titulo
         tituloStr = "Just do that.";
         titulo = new JLabel(tituloStr);
-        titulo.setFont(new Font("Montserrat", Font.BOLD, 20));
+        titulo.setFont(fuente);
         titulo.setVerticalAlignment(JLabel.CENTER);
         titulo.setHorizontalAlignment(JLabel.CENTER);
         titulo.setForeground(Color.white);
@@ -120,36 +125,10 @@ public class GUI {
         principal.setPreferredSize(new Dimension(300, 100));
         principal.setLayout(new CardLayout());
 
-        //Panel Tasks
-        JPanel task = new JPanel();
-        task.setBackground(new Color(0x27AE6A));
-        task.setSize(new Dimension(200, 100));
-        task.setOpaque(false);
-        task.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        // Panel tasks
+        TaskPanel task = new TaskPanel();
 
-        JPanel[] pendientes = new JPanel[2];
-        for (JPanel pendiente : pendientes) {
-            pendiente = new JPanel();
-            // El tamaño debería ponerse según el tamaño del título, o algo así.
-            pendiente.setPreferredSize(new Dimension(300, 100));
-            pendiente.setBackground(new Color(0xAFF478));
-            task.add(pendiente);
-        }
-
-        //Add Button
-        JButton addOne = new JButton();
-        addOne.setIcon(new ImageIcon("imagenes/plus.png"));
-        addOne.setBackground(null);
-        addOne.setBorder(null);
-
-        addOne.addActionListener(e -> {
-            System.out.println("Agregando Task...");
-            principal.add(task);
-        });
-        //principal.add(addOne);
-        task.add(addOne);
-
-        // Adición de las "cartas" pricipal
+        // Adición de las "cartas" principal
         principal.add(task);
 
         //Adición de los elementos al frame
@@ -157,6 +136,72 @@ public class GUI {
         frame.add(footer, BorderLayout.SOUTH);
         frame.add(principal, BorderLayout.CENTER);
         frame.setVisible(true);
+    }
 
+    private class TaskPanel extends JPanel implements ActionListener {
+        JButton addOne;
+        ArrayList<JPanel> paneles;
+
+        TaskPanel() {
+            this.setBackground(new Color(0x27AE6A));
+            this.setSize(new Dimension(200, 100));
+            this.setOpaque(false);
+            this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+            paneles = new ArrayList<>();
+            for (Pendiente pendiente : Organizador.pendientes) {
+                JPanel panel = new JPanel();
+                panel.setLayout(new FlowLayout());
+                panel.setPreferredSize(new Dimension(300, 100));
+                panel.setBackground(new Color(0xAFF478));
+                JLabel label = new JLabel(pendiente.getDescripcion());
+                label.setFont(fuente);
+                panel.add(label);
+                paneles.add(panel);
+            }
+
+            //Add Button
+            addOne = new JButton();
+            addOne.setIcon(new ImageIcon("imagenes/plus.png"));
+            addOne.setBackground(null);
+            addOne.setBorder(null);
+            addOne.addActionListener(this);
+            this.add(addOne);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JPanel panel = new JPanel();
+            // panel.setLayout(null);
+            panel.setPreferredSize(new Dimension(300, 50));
+            panel.setBackground(new Color(0xAFF478));
+            this.remove(addOne);
+            JTextField textField = new JTextField();
+            textField.setPreferredSize(new Dimension(280, 40));
+            textField.addActionListener(f -> {
+                String texto = textField.getText();
+                Organizador.agregarPendiente(texto);
+                panel.remove(textField);
+                JLabel label = new JLabel();
+                label.setFont(fuente);
+                label.setPreferredSize(new Dimension(280, 40));
+                label.setText(texto);
+                panel.add(label);
+                revalidate();
+                repaint();
+            });
+            panel.add(textField);
+            paneles.add(panel);
+            actualizarPaneles();
+        }
+
+        private void actualizarPaneles() {
+            this.removeAll();
+            for (JPanel panel : paneles) {
+                this.add(panel);
+            }
+            this.add(addOne);
+            revalidate();
+            repaint();
+        }
     }
 }
