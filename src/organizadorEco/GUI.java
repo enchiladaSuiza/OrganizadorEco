@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class GUI {
@@ -19,7 +21,7 @@ public class GUI {
     JButton basura;
     JButton config;
     JPanel principal;
-    Font fuente;
+    String fuente;
 
     public GUI() {
 
@@ -39,12 +41,12 @@ public class GUI {
         header.setLayout(new BorderLayout(0, 0));
 
         // Fuente
-        fuente = new Font("Montserrat", Font.BOLD, 20);
+        fuente = "Montserrat";
 
         //Texto del titulo
         tituloStr = "Just do that.";
         titulo = new JLabel(tituloStr);
-        titulo.setFont(fuente);
+        titulo.setFont(new Font(fuente, Font.BOLD, 20));
         titulo.setVerticalAlignment(JLabel.CENTER);
         titulo.setHorizontalAlignment(JLabel.CENTER);
         titulo.setForeground(Color.white);
@@ -61,56 +63,31 @@ public class GUI {
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
-        hechos.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de hechos ao");
-        	}
-        });
+        hechos.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de hechos ao"));
         
         calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
-        calendario.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de calendario ao x2");
-        	}
-        });
+        calendario.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de calendario ao x2"));
         
         home = new JButton();
         home.setIcon(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
-        home.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de home ao x3");
-        	}
-        });
+        home.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de home ao x3"));
         
         basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
-        basura.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de basura ao x4");
-        	}
-        });
+        basura.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de basura ao x4"));
         
         config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
-        config.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000");
-        	}
-        });
+        config.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000"));
 
         JButton[] imagenes = {hechos, calendario, home, basura, config};
 
@@ -139,8 +116,10 @@ public class GUI {
     }
 
     private class TaskPanel extends JPanel implements ActionListener {
+        ArrayList<PendientePanel> paneles;
         JButton addOne;
-        ArrayList<JPanel> paneles;
+        JPanel escritura;
+        JTextField campo;
 
         TaskPanel() {
             this.setBackground(new Color(0x27AE6A));
@@ -148,18 +127,10 @@ public class GUI {
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
             paneles = new ArrayList<>();
-            for (Pendiente pendiente : Organizador.pendientes) {
-                JPanel panel = new JPanel();
-                panel.setLayout(new FlowLayout());
-                panel.setPreferredSize(new Dimension(300, 100));
-                panel.setBackground(new Color(0xAFF478));
-                JLabel label = new JLabel(pendiente.getDescripcion());
-                label.setFont(fuente);
-                panel.add(label);
-                paneles.add(panel);
+            for (int i = 0; i < Organizador.pendientes.size(); i++) {
+                String desc = Organizador.pendientes.get(i).getDescripcion();
+                paneles.add(new PendientePanel(desc, i));
             }
-
-            //Add Button
             addOne = new JButton();
             addOne.setIcon(new ImageIcon("imagenes/plus.png"));
             addOne.setBackground(null);
@@ -170,28 +141,25 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JPanel panel = new JPanel();
-            // panel.setLayout(null);
-            panel.setPreferredSize(new Dimension(300, 50));
-            panel.setBackground(new Color(0xAFF478));
             this.remove(addOne);
-            JTextField textField = new JTextField();
-            textField.setPreferredSize(new Dimension(280, 40));
-            textField.addActionListener(f -> {
-                String texto = textField.getText();
+            escritura = new JPanel();
+            escritura.setPreferredSize(new Dimension(300, 50));
+            escritura.setBackground(new Color(0xAFF478));
+            campo = new JTextField();
+            campo.setPreferredSize(new Dimension(280, 40));
+            campo.setFont(new Font(fuente, Font.PLAIN, 12));
+            campo.addActionListener(f -> {
+                String texto = campo.getText();
                 Organizador.agregarPendiente(texto);
-                panel.remove(textField);
-                JLabel label = new JLabel();
-                label.setFont(fuente);
-                label.setPreferredSize(new Dimension(280, 40));
-                label.setText(texto);
-                panel.add(label);
-                revalidate();
-                repaint();
+                int indice = Organizador.pendientes.size() - 1;
+                PendientePanel pendiente = new PendientePanel(texto, indice);
+                paneles.add(pendiente);
+                actualizarPaneles();
             });
-            panel.add(textField);
-            paneles.add(panel);
-            actualizarPaneles();
+            escritura.add(campo);
+            this.add(escritura);
+            revalidate();
+            repaint();
         }
 
         private void actualizarPaneles() {
@@ -202,6 +170,73 @@ public class GUI {
             this.add(addOne);
             revalidate();
             repaint();
+        }
+
+        private class PendientePanel extends JPanel implements MouseListener {
+            final int WIDTH = 300;
+            final int HEIGHT = 50;
+            final int HGAP = 12;
+            final int VGAP = 15;
+            final int COLS = 17;
+            boolean clickeado = false;
+            JLabel label;
+            JTextArea area;
+            int indice;
+
+            PendientePanel(String descripcion, int indice) {
+                this.indice = indice;
+                this.setLayout(new FlowLayout(FlowLayout.LEFT, HGAP, VGAP));
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                this.setBackground(new Color(0xAFF478));
+                label = new JLabel(descripcion, SwingConstants.LEFT);
+                label.setVerticalAlignment(SwingConstants.CENTER);
+                label.setFont(new Font(fuente, Font.PLAIN, 15));
+                label.setPreferredSize(new Dimension(250, 20));
+                area = new JTextArea();
+                area.setFont(new Font(fuente, Font.PLAIN, 15));
+                // area.setBackground(new Color(0xAFF478));
+                area.setText(descripcion);
+                area.setColumns(COLS);
+                area.setWrapStyleWord(true);
+                area.setLineWrap(true);
+                this.add(label);
+                this.add(area);
+                this.addMouseListener(this);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                clickeado = !clickeado;
+                if (clickeado) {
+                    this.remove(label);
+                    this.add(area);
+                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT + area.getHeight()));
+                } else {
+                    this.remove(area);
+                    this.add(label);
+                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                    label.setText(area.getText());
+                    Organizador.modificarPendiente(area.getText(), indice);
+                }
+                revalidate();
+                repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
         }
     }
 }
