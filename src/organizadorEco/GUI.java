@@ -176,63 +176,89 @@ public class GUI {
             final int WIDTH = 300;
             final int HEIGHT = 40;
             final int SIZE = 15;
-            boolean clickeado = false;
             JLabel label;
             JTextArea area;
+            JButton eliminar;
+            JButton confirmar;
+            JButton guardar;
             int indice;
 
             PendientePanel(String descripcion, int indice) {
                 this.indice = indice;
-                this.setLayout(null);
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
-                label = new JLabel(descripcion);
+
+                label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
-                label.setBounds(10, 10, 280, 20);
+                label.setVerticalAlignment(SwingConstants.CENTER);
+                label.setPreferredSize(new Dimension(285, 20));
+                // label.setBackground(Color.white);
+
                 area = new JTextArea();
                 area.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 area.setText(descripcion);
                 area.setWrapStyleWord(true);
                 area.setLineWrap(true);
-                area.setBounds(10, 10, 280, 80);
-                this.add(label);
-                this.addMouseListener(this);
+                area.setPreferredSize(new Dimension(280, 95));
 
-            }
+                eliminar = new JButton();
+                ImageIcon remove = new ImageIcon("imagenes/remove.png");
+                eliminar.setIcon(remove);
+                eliminar.setBackground(null);
+                eliminar.setBorder(null);
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                clickeado = !clickeado;
-                if (clickeado) {
-                    this.remove(label);
-                    this.add(area);
-                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 100));
-                } else {
+                confirmar = new JButton();
+                ImageIcon checkmark = new ImageIcon("imagenes/checkmark.png");
+                confirmar.setIcon(checkmark);
+                confirmar.setBackground(null);
+                confirmar.setBorder(null);
+
+                guardar = new JButton();
+                ImageIcon save = new ImageIcon("imagenes/save.png");
+                guardar.setIcon(save);
+                guardar.setBackground(null);
+                guardar.setBorder(null);
+                guardar.addActionListener(e -> {
                     this.remove(area);
+                    this.remove(confirmar);
+                    this.remove(eliminar);
+                    this.remove(guardar);
                     this.add(label);
                     this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                     label.setText(area.getText());
                     Organizador.modificarPendiente(area.getText(), indice);
-                }
+                    revalidate();
+                    repaint();
+                });
+
+                this.add(label);
+                this.addMouseListener(this);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
+                this.remove(label);
+                this.add(area);
+                this.add(eliminar);
+                this.add(confirmar);
+                this.add(guardar);
                 revalidate();
                 repaint();
             }
 
             @Override
-            public void mousePressed(MouseEvent e) {
-            }
+            public void mousePressed(MouseEvent e) { }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-            }
+            public void mouseReleased(MouseEvent e) { }
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-            }
+            public void mouseEntered(MouseEvent e) { }
 
             @Override
-            public void mouseExited(MouseEvent e) {
-            }
+            public void mouseExited(MouseEvent e) { }
         }
     }
 }
