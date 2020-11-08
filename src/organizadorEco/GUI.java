@@ -6,12 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 public class GUI {
     JFrame frame;
     JPanel header;
-    String tituloStr;
     JLabel titulo;
     JPanel footer;
     JButton hechos;
@@ -20,7 +18,9 @@ public class GUI {
     JButton basura;
     JButton config;
     JPanel principal;
-    String fuente;
+
+    String fuente = "Montserrat";
+    String tituloStr = "Just do that.";
 
     TaskPanel task;
     DonePanel done;
@@ -33,7 +33,6 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(350, 600);
         frame.setTitle("Organizador");
-        frame.getContentPane().setBackground(new Color(0x27AE60));
         frame.setLayout(new BorderLayout(0, 0));
         frame.setLocationRelativeTo(null);
 
@@ -44,14 +43,13 @@ public class GUI {
         CardLayout pantallas = new CardLayout();
         principal.setLayout(pantallas);
 
-        // Haciedno las cartas
+        // Haciendo las cartas
         task = new TaskPanel();
         done = new DonePanel();
         deleted = new DeletedPanel();
         principal.add(task, "task");
         principal.add(done, "done");
         principal.add(deleted, "deleted");
-
         pantallas.show(principal, "task");
 
         //Recuadro que contiene el titulo
@@ -60,11 +58,7 @@ public class GUI {
         header.setPreferredSize(new Dimension(350, 60));
         header.setLayout(new BorderLayout(0, 0));
 
-        // Fuente
-        fuente = "Montserrat";
-
         //Texto del titulo
-        tituloStr = "Just do that.";
         titulo = new JLabel(tituloStr);
         titulo.setFont(new Font(fuente, Font.BOLD, 20));
         titulo.setVerticalAlignment(JLabel.CENTER);
@@ -79,39 +73,33 @@ public class GUI {
         footer.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 15));
 
         //Creación de los "Botones"
-        hechos = new JButton();
-        hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
+        hechos = new JButton(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
         hechos.addActionListener(e -> pantallas.show(principal, "done"));
         
-        calendario = new JButton();
-        calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
+        calendario = new JButton(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
         calendario.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de calendario ao x2"));
         
-        home = new JButton();
-        home.setIcon(new ImageIcon("imagenes/home.png"));
+        home = new JButton(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
         home.addActionListener(e -> pantallas.show(principal, "task"));
         
-        basura = new JButton();
-        basura.setIcon(new ImageIcon("imagenes/trash.png"));
+        basura = new JButton(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
         basura.addActionListener(e -> pantallas.show(principal, "deleted"));
         
-        config = new JButton();
-        config.setIcon(new ImageIcon("imagenes/gear.png"));
+        config = new JButton(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
         config.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000"));
 
-        JButton[] imagenes = {hechos, calendario, home, basura, config};
-
         //Adicion de los botones al footer
+        JButton[] imagenes = {hechos, calendario, home, basura, config};
         for (JButton imagen : imagenes) {
            footer.add(imagen);
         }
@@ -189,7 +177,7 @@ public class GUI {
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 label.setVerticalAlignment(SwingConstants.CENTER);
-                label.setPreferredSize(new Dimension(285, 20));
+                label.setPreferredSize(new Dimension(WIDTH - 15, HEIGHT / 2));
 
                 area = new JTextArea();
                 area.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -204,6 +192,7 @@ public class GUI {
                 eliminar.setBackground(null);
                 eliminar.setBorder(null);
                 eliminar.addActionListener(e -> {
+                    Organizador.modificarPendiente(descripcion, area.getText());
                     deleted.borrar(area.getText());
                     actualizarPaneles();
                 });
@@ -214,8 +203,9 @@ public class GUI {
                 confirmar.setBackground(null);
                 confirmar.setBorder(null);
                 confirmar.addActionListener(e -> {
+                    Organizador.modificarPendiente(descripcion, area.getText());
                     done.agregar(area.getText());
-                    task.actualizarPaneles();
+                    actualizarPaneles();
                 });
 
                 guardar = new JButton();
@@ -267,69 +257,105 @@ public class GUI {
     }
 
     private class DonePanel extends JPanel {
-        ArrayList<PendienteDone> hechos;
         JLabel puntaje;
 
         DonePanel() {
             this.setBackground(new Color(0x27AE6A));
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-            hechos = new ArrayList<>();
             puntaje = new JLabel(Integer.toString(Organizador.realizados.size()));
-            puntaje.setFont(new Font(fuente, Font.BOLD, 18));
+            puntaje.setFont(new Font(fuente, Font.BOLD, 20));
             puntaje.setForeground(Color.white);
             actualizarPaneles();
         }
 
         private void actualizarPaneles() {
             this.removeAll();
-            hechos.clear();
             for (Pendiente pend : Organizador.realizados) {
                 PendienteDone hecho = new PendienteDone(pend.getDescripcion());
-                hechos.add(hecho);
                 this.add(hecho);
                 this.add(new JLabel(new ImageIcon("imagenes/medal.png")));
             }
-            puntaje.setText(Integer.toString(hechos.size()));
+            puntaje.setText(Integer.toString(Organizador.realizados.size()));
             this.add(puntaje);
             revalidate();
             repaint();
         }
 
         private void agregar(String desc) {
-            PendienteDone hecho = new PendienteDone(desc);
             Organizador.marcarCompletado(desc);
-            hechos.add(hecho);
             actualizarPaneles();
         }
 
-        private class PendienteDone extends JPanel {
+        private class PendienteDone extends JPanel implements MouseListener {
             final int WIDTH = 250;
             final int HEIGHT = 40;
             final int SIZE = 15;
             JLabel label;
+            JTextArea area;
+            JButton restaurar;
 
             PendienteDone(String descripcion) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
+
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 label.setVerticalAlignment(SwingConstants.CENTER);
-                label.setPreferredSize(new Dimension(285, 20));
+                label.setPreferredSize(new Dimension(WIDTH - 15, HEIGHT / 2));
+
+                area = new JTextArea();
+                area.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                area.setText(descripcion);
+                area.setWrapStyleWord(true);
+                area.setLineWrap(true);
+                area.setEditable(false);
+                area.setBackground(new Color(0xAFF478));
+                area.setPreferredSize(new Dimension(220, 95));
+
+                restaurar = new JButton(new ImageIcon("imagenes/refresh.png"));
+                restaurar.setBackground(null);
+                restaurar.setBorder(null);
+                restaurar.addActionListener(e -> {
+                    Organizador.marcarNoCompletado(area.getText());
+                    actualizarPaneles();
+                    task.actualizarPaneles();
+                });
+
+                this.addMouseListener(this);
                 this.add(label);
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
+                this.remove(label);
+                this.add(area);
+                this.add(restaurar);
+                revalidate();
+                repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) { }
+
+            @Override
+            public void mouseReleased(MouseEvent e) { }
+
+            @Override
+            public void mouseEntered(MouseEvent e) { }
+
+            @Override
+            public void mouseExited(MouseEvent e) { }
         }
     }
 
     private class DeletedPanel extends JPanel {
-        ArrayList<PendienteDeleted> basura;
-
         DeletedPanel() {
             this.setBackground(new Color(0x27AE6A));
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-            basura = new ArrayList<>();
             for (int i = 0; i < Organizador.eliminados.size(); i++) {
                 String desc = Organizador.eliminados.get(i).getDescripcion();
                 basura.add(new PendienteDeleted(desc));
@@ -337,16 +363,15 @@ public class GUI {
         }
 
         private void borrar(String desc) {
-            PendienteDeleted borrado = new PendienteDeleted(desc);
             Organizador.eliminarPendiente(desc);
-            basura.add(borrado);
             actualizarPaneles();
         }
 
         private void actualizarPaneles() {
             this.removeAll();
-            for (JPanel panel : basura) {
-                this.add(panel);
+            for (Pendiente pend : Organizador.eliminados) {
+                PendienteDeleted deleted = new PendienteDeleted(pend.getDescripcion());
+                this.add(deleted);
             }
             revalidate();
             repaint();
@@ -369,21 +394,22 @@ public class GUI {
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 label.setVerticalAlignment(SwingConstants.CENTER);
-                label.setPreferredSize(new Dimension(285, 20));
+                label.setPreferredSize(new Dimension(WIDTH - 15, HEIGHT / 2));
 
                 area = new JTextArea();
                 area.setFont(new Font(fuente, Font.PLAIN, SIZE));
                 area.setText(descripcion);
                 area.setWrapStyleWord(true);
                 area.setLineWrap(true);
+                area.setEditable(false);
+                area.setBackground(new Color(0xAFF478));
                 area.setPreferredSize(new Dimension(280, 95));
 
                 recuperar = new JButton(new ImageIcon("imagenes/refresh.png"));
                 recuperar.setBackground(null);
                 recuperar.setBorder(null);
                 recuperar.addActionListener(e -> {
-                    Organizador.agregarPendiente(area.getText());
-                    basura.remove(this);
+                    Organizador.recuperarPendiente(area.getText());
                     actualizarPaneles();
                     task.actualizarPaneles();
                 });
@@ -393,7 +419,6 @@ public class GUI {
                 descartar.setBorder(null);
                 descartar.addActionListener(e -> {
                     Organizador.eliminarPermanente(area.getText());
-                    basura.remove(this);
                     actualizarPaneles();
                 });
 
