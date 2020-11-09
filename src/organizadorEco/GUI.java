@@ -117,7 +117,7 @@ public class GUI {
         config.setBackground(null);
         config.setBorder(null);
         config.addActionListener(e -> pantallas.show(principal, "settings"));
-        
+
         JButton[] imagenes = {hechos, calendario, home, basura, config};
 
         //Adicion de los botones al footer
