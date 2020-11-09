@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 
 public class GUI {
     JFrame frame;
+
     JPanel header;
     JLabel titulo;
     JPanel footer;
@@ -26,6 +27,9 @@ public class GUI {
     DonePanel done;
     DeletedPanel deleted;
     ConfigPanel settings;
+    Calendario calendar;
+
+    String pag;
 
     public GUI() {
 
@@ -49,11 +53,16 @@ public class GUI {
         done = new DonePanel();
         deleted = new DeletedPanel();
         settings = new ConfigPanel();
+        calendar = new Calendario();
         principal.add(task, "task");
         principal.add(done, "done");
         principal.add(deleted, "deleted");
         principal.add(settings, "settings");
+        principal.add(calendar, "calendar");
         pantallas.show(principal, "task");
+
+        //Pag Actual
+        this.pag = "main";
 
         //Recuadro que contiene el titulo
         header = new JPanel();
@@ -84,7 +93,7 @@ public class GUI {
         calendario = new JButton(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
-        calendario.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de calendario ao x2"));
+        calendario.addActionListener(e -> pantallas.show(principal, "calendar"));
         
         home = new JButton(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
@@ -95,7 +104,7 @@ public class GUI {
         basura.setBackground(null);
         basura.setBorder(null);
         basura.addActionListener(e -> pantallas.show(principal, "deleted"));
-        
+
         config = new JButton(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
@@ -108,9 +117,9 @@ public class GUI {
         }
 
         //Adición de los elementos al frame
+        frame.add(principal, BorderLayout.CENTER);
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
-        frame.add(principal, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
@@ -484,4 +493,5 @@ public class GUI {
             this.add(custom);
         }
     }
+
 }
