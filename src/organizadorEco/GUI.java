@@ -25,6 +25,7 @@ public class GUI {
     TaskPanel task;
     DonePanel done;
     DeletedPanel deleted;
+    ConfigPanel settings;
 
     public GUI() {
 
@@ -47,9 +48,11 @@ public class GUI {
         task = new TaskPanel();
         done = new DonePanel();
         deleted = new DeletedPanel();
+        settings = new ConfigPanel();
         principal.add(task, "task");
         principal.add(done, "done");
         principal.add(deleted, "deleted");
+        principal.add(settings, "settings");
         pantallas.show(principal, "task");
 
         //Recuadro que contiene el titulo
@@ -96,7 +99,7 @@ public class GUI {
         config = new JButton(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
-        config.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000"));
+        config.addActionListener(e -> pantallas.show(principal, "settings"));
 
         //Adicion de los botones al footer
         JButton[] imagenes = {hechos, calendario, home, basura, config};
@@ -448,6 +451,37 @@ public class GUI {
 
             @Override
             public void mouseExited(MouseEvent e) { }
+        }
+    }
+
+    private class ConfigPanel extends JPanel {
+        final int WIDTH = 320;
+        final int HEIGHT = 50;
+        JPanel custom;
+        JLabel cambiarFuente;
+        JTextField fuenteActual;
+
+        ConfigPanel() {
+            this.setBackground(new Color(0x27AE6A));
+            this.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 20));
+
+            custom = new JPanel();
+            custom.setBackground(new Color(0xC2FC9E));
+            // custom.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+            custom.setLayout(new FlowLayout(FlowLayout.CENTER, 100, 10));
+
+            cambiarFuente = new JLabel("Fuente");
+            cambiarFuente.setFont(new Font(fuente, Font.PLAIN, 14));
+
+            fuenteActual = new JTextField(fuente);
+            fuenteActual.setFont(new Font(fuente, Font.PLAIN, 14));
+            fuenteActual.setForeground(Color.gray);
+            fuenteActual.setBackground(new Color(0xC2FC9E));
+
+            custom.add(cambiarFuente);
+            custom.add(fuenteActual);
+
+            this.add(custom);
         }
     }
 }
