@@ -64,6 +64,11 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
             this.dias[d].setForeground(Color.BLACK);
         }
 
+        for(int w = 0; w < 12; ++w) {
+            this.month.addItem(mes[w]);
+        }
+        this.month.addItemListener(this);
+
         this.makeCalendar();
     }
 
@@ -71,30 +76,23 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
         this.fillPanelNombreM();
         this.fillPanelMes();
 
-
         add(this.panelMes);
         add(this.panelNomM);
         add(this.month);
 
-        this.panelNomM.setBounds(20, 30, 100, 30);
+        this.panelNomM.setBounds(20, 30, 130, 30);
         this.panelMes.setBounds(20, 70, 300, 300);
-        this.month.setBounds(140, 30, 150, 30);
+        this.month.setBounds(160, 30, 150, 30);
     }
 
     private void fillPanelNombreM() {
-        this.panelNomM.remove(this.labelMeses[pos]);
-        //this.month.removeAllItems();
-
-        for(int w = 0; w < 12; ++w) {
-            this.month.addItem(mes[w]);
-        }
-        this.month.addItemListener(this);
+        this.panelNomM.removeAll();
 
         for(int x = 0; x < 12; ++x) {
             if(this.op.equals(mes[x])) this.pos = x;
         }
 
-        this.panelNomM.add(this.labelMeses[pos], BorderLayout.CENTER);
+        this.panelNomM.add(this.labelMeses[this.pos], BorderLayout.CENTER);
     }
 
     private void fillPanelMes() {
@@ -104,11 +102,11 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
             this.panelMes.add(x);
         }
 
-        if(this.pos == 2) {
+        if(this.pos == 1) {
             for(int p = 0; p < 28; ++p) {
                 this.panelMes.add(this.dias[p]);
             }
-        } else if(this.pos == 4 || this.pos == 6 || this.pos == 9 || this.pos == 11) {
+        } else if(this.pos == 3 || this.pos == 5 || this.pos == 8 || this.pos == 10) {
             for(int p = 0; p < 30; ++p) {
                 this.panelMes.add(this.dias[p]);
             }
@@ -125,11 +123,11 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
 
         this.remove(this.panelMes);
         this.remove(this.panelNomM);
+        repaint();
         System.out.println("SE eliminaron paneles");
 
         this.makeCalendar();
 
-        revalidate();
         repaint();
     }
 
