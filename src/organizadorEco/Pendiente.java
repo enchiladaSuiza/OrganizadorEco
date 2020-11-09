@@ -14,4 +14,5 @@ public class Pendiente {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
 }
