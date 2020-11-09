@@ -29,7 +29,6 @@ public class GUI {
     ConfigPanel settings;
     Calendario calendar;
 
-    String pag;
 
     public GUI() {
 
@@ -61,9 +60,6 @@ public class GUI {
         principal.add(calendar, "calendar");
         pantallas.show(principal, "task");
 
-        //Pag Actual
-        this.pag = "main";
-
         //Recuadro que contiene el titulo
         header = new JPanel();
         header.setBackground(new Color(0xB0FFA3));
@@ -89,7 +85,19 @@ public class GUI {
         hechos.setBackground(null);
         hechos.setBorder(null);
         hechos.addActionListener(e -> pantallas.show(principal, "done"));
-        
+
+        //Calendari0
+        calendario = new JButton();
+        calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
+        calendario.setBackground(null);
+        calendario.setBorder(null);
+        calendario.addActionListener(e -> {});
+
+        home = new JButton();
+        home.setIcon(new ImageIcon("imagenes/home.png"));
+        home.setBackground(null);
+        home.setBorder(null);
+
         calendario = new JButton(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
@@ -99,7 +107,7 @@ public class GUI {
         home.setBackground(null);
         home.setBorder(null);
         home.addActionListener(e -> pantallas.show(principal, "task"));
-        
+
         basura = new JButton(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
@@ -109,9 +117,10 @@ public class GUI {
         config.setBackground(null);
         config.setBorder(null);
         config.addActionListener(e -> pantallas.show(principal, "settings"));
+        
+        JButton[] imagenes = {hechos, calendario, home, basura, config};
 
         //Adicion de los botones al footer
-        JButton[] imagenes = {hechos, calendario, home, basura, config};
         for (JButton imagen : imagenes) {
            footer.add(imagen);
         }
