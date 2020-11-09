@@ -4,22 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class GUI {
 
     JFrame frame;
-    JPanel header;
-    String tituloStr;
+    JPanel header, footer, principal, calendar;
     JLabel titulo;
-    JPanel footer;
-    JButton hechos;
-    JButton calendario;
-    JButton home;
-    JButton basura;
-    JButton config;
-    JPanel principal;
-    Font fuente;
+    JButton hechos, calendario, home, basura, config;
+    String tituloStr, fuente, pag;
 
     public GUI() {
 
@@ -32,6 +27,9 @@ public class GUI {
         frame.setLayout(new BorderLayout(0, 0));
         frame.setLocationRelativeTo(null);
 
+        //Pag Actual
+        this.pag = "main";
+
         //Recuadro que contiene el titulo
         header = new JPanel();
         header.setBackground(new Color(0xB0FFA3));
@@ -39,12 +37,12 @@ public class GUI {
         header.setLayout(new BorderLayout(0, 0));
 
         // Fuente
-        fuente = new Font("Montserrat", Font.BOLD, 20);
+        fuente = "Montserrat";
 
         //Texto del titulo
         tituloStr = "Just do that.";
         titulo = new JLabel(tituloStr);
-        titulo.setFont(fuente);
+        titulo.setFont(new Font(fuente, Font.BOLD, 20));
         titulo.setVerticalAlignment(JLabel.CENTER);
         titulo.setHorizontalAlignment(JLabel.CENTER);
         titulo.setForeground(Color.white);
@@ -61,55 +59,59 @@ public class GUI {
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
-        hechos.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de hechos ao");
-        	}
+        hechos.addActionListener(e -> {
+            this.pag = "hechos";
+            System.out.println("Hola, esta es la accion del boton de hechos ao");
         });
-        
+
+        //Calendari0
+        Calendario obj = new Calendario();
         calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
-        calendario.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de calendario ao x2");
-        	}
+        calendario.addActionListener(e -> {
+            this.principal.setVisible(false);
+            frame.add(obj, BorderLayout.CENTER);
+            obj.setVisible(true);
+            this.pag = "calendar";
+            System.out.println("Hola, esta es la accion del boton de calendario ao x2");
         });
-        
+
+        /*calendar = new JPanel();
+        calendar.setBackground(new Color(0x27AE60));
+        calendar.setPreferredSize(new Dimension(350, 400));
+        calendar.setLayout(new BorderLayout(0, 0));
+
+        calendar.add(new Calendario(), BorderLayout.CENTER);*/
+
         home = new JButton();
         home.setIcon(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
-        home.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de home ao x3");
-        	}
+        home.addActionListener(e -> {
+            obj.setVisible(false);
+            this.principal.setVisible(true);
+            this.pag = "main";
+            System.out.println("Hola, esta es la accion del boton de home ao x3");
         });
         
         basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
-        basura.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de basura ao x4");
-        	}
+        basura.addActionListener(e -> {
+            this.pag = "trash";
+            System.out.println("Hola, esta es la accion del boton de basura ao x4");
         });
         
         config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
-        config.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000");
-        	}
+        config.addActionListener(e -> {
+            this.pag = "config";
+            System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000");
         });
 
         JButton[] imagenes = {hechos, calendario, home, basura, config};
@@ -134,13 +136,23 @@ public class GUI {
         //Adición de los elementos al frame
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
-        frame.add(principal, BorderLayout.CENTER);
+        switch (this.pag) {
+            case "main" -> {
+                frame.add(principal, BorderLayout.CENTER);
+            }
+            case "calendar" -> {
+                frame.add(obj, BorderLayout.CENTER);
+            }
+        }
+
         frame.setVisible(true);
     }
 
     private class TaskPanel extends JPanel implements ActionListener {
+        ArrayList<PendientePanel> paneles;
         JButton addOne;
-        ArrayList<JPanel> paneles;
+        JPanel escritura;
+        JTextField campo;
 
         TaskPanel() {
             this.setBackground(new Color(0x27AE6A));
@@ -148,18 +160,10 @@ public class GUI {
             this.setOpaque(false);
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
             paneles = new ArrayList<>();
-            for (Pendiente pendiente : Organizador.pendientes) {
-                JPanel panel = new JPanel();
-                panel.setLayout(new FlowLayout());
-                panel.setPreferredSize(new Dimension(300, 100));
-                panel.setBackground(new Color(0xAFF478));
-                JLabel label = new JLabel(pendiente.getDescripcion());
-                label.setFont(fuente);
-                panel.add(label);
-                paneles.add(panel);
+            for (int i = 0; i < Organizador.pendientes.size(); i++) {
+                String desc = Organizador.pendientes.get(i).getDescripcion();
+                paneles.add(new PendientePanel(desc, i));
             }
-
-            //Add Button
             addOne = new JButton();
             addOne.setIcon(new ImageIcon("imagenes/plus.png"));
             addOne.setBackground(null);
@@ -170,28 +174,25 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JPanel panel = new JPanel();
-            // panel.setLayout(null);
-            panel.setPreferredSize(new Dimension(300, 50));
-            panel.setBackground(new Color(0xAFF478));
             this.remove(addOne);
-            JTextField textField = new JTextField();
-            textField.setPreferredSize(new Dimension(280, 40));
-            textField.addActionListener(f -> {
-                String texto = textField.getText();
+            escritura = new JPanel();
+            escritura.setPreferredSize(new Dimension(300, 40));
+            escritura.setBackground(new Color(0xAFF478));
+            campo = new JTextField();
+            campo.setPreferredSize(new Dimension(280, 30));
+            campo.setFont(new Font(fuente, Font.PLAIN, 12));
+            campo.addActionListener(f -> {
+                String texto = campo.getText();
                 Organizador.agregarPendiente(texto);
-                panel.remove(textField);
-                JLabel label = new JLabel();
-                label.setFont(fuente);
-                label.setPreferredSize(new Dimension(280, 40));
-                label.setText(texto);
-                panel.add(label);
-                revalidate();
-                repaint();
+                int indice = Organizador.pendientes.size() - 1;
+                PendientePanel pendiente = new PendientePanel(texto, indice);
+                paneles.add(pendiente);
+                actualizarPaneles();
             });
-            panel.add(textField);
-            paneles.add(panel);
-            actualizarPaneles();
+            escritura.add(campo);
+            this.add(escritura);
+            revalidate();
+            repaint();
         }
 
         private void actualizarPaneles() {
@@ -203,5 +204,69 @@ public class GUI {
             revalidate();
             repaint();
         }
+
+        private class PendientePanel extends JPanel implements MouseListener {
+            final int WIDTH = 300;
+            final int HEIGHT = 40;
+            final int SIZE = 15;
+            boolean clickeado = false;
+            JLabel label;
+            JTextArea area;
+            int indice;
+
+            PendientePanel(String descripcion, int indice) {
+                this.indice = indice;
+                this.setLayout(null);
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                this.setBackground(new Color(0xAFF478));
+                label = new JLabel(descripcion);
+                label.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                label.setBounds(10, 10, 280, 20);
+                area = new JTextArea();
+                area.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                area.setText(descripcion);
+                area.setWrapStyleWord(true);
+                area.setLineWrap(true);
+                area.setBounds(10, 10, 280, 80);
+                this.add(label);
+                this.addMouseListener(this);
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                clickeado = !clickeado;
+                if (clickeado) {
+                    this.remove(label);
+                    this.add(area);
+                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 100));
+                } else {
+                    this.remove(area);
+                    this.add(label);
+                    this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+                    label.setText(area.getText());
+                    Organizador.modificarPendiente(area.getText(), indice);
+                }
+                revalidate();
+                repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        }
     }
+
 }
