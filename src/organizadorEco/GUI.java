@@ -11,17 +11,10 @@ import java.util.ArrayList;
 public class GUI {
 
     JFrame frame;
-    JPanel header;
-    String tituloStr;
+    JPanel header, footer, principal, calendar;
     JLabel titulo;
-    JPanel footer;
-    JButton hechos;
-    JButton calendario;
-    JButton home;
-    JButton basura;
-    JButton config;
-    JPanel principal;
-    String fuente;
+    JButton hechos, calendario, home, basura, config;
+    String tituloStr, fuente, pag;
 
     public GUI() {
 
@@ -33,6 +26,9 @@ public class GUI {
         frame.getContentPane().setBackground(new Color(0x27AE60));
         frame.setLayout(new BorderLayout(0, 0));
         frame.setLocationRelativeTo(null);
+
+        //Pag Actual
+        this.pag = "main";
 
         //Recuadro que contiene el titulo
         header = new JPanel();
@@ -63,31 +59,60 @@ public class GUI {
         hechos.setIcon(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
-        hechos.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de hechos ao"));
-        
+        hechos.addActionListener(e -> {
+            this.pag = "hechos";
+            System.out.println("Hola, esta es la accion del boton de hechos ao");
+        });
+
+        //Calendari0
+        Calendario obj = new Calendario();
         calendario = new JButton();
         calendario.setIcon(new ImageIcon("imagenes/calendar.png"));
         calendario.setBackground(null);
         calendario.setBorder(null);
-        calendario.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de calendario ao x2"));
-        
+        calendario.addActionListener(e -> {
+            this.principal.setVisible(false);
+            frame.add(obj, BorderLayout.CENTER);
+            obj.setVisible(true);
+            this.pag = "calendar";
+            System.out.println("Hola, esta es la accion del boton de calendario ao x2");
+        });
+
+        /*calendar = new JPanel();
+        calendar.setBackground(new Color(0x27AE60));
+        calendar.setPreferredSize(new Dimension(350, 400));
+        calendar.setLayout(new BorderLayout(0, 0));
+
+        calendar.add(new Calendario(), BorderLayout.CENTER);*/
+
         home = new JButton();
         home.setIcon(new ImageIcon("imagenes/home.png"));
         home.setBackground(null);
         home.setBorder(null);
-        home.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de home ao x3"));
+        home.addActionListener(e -> {
+            obj.setVisible(false);
+            this.principal.setVisible(true);
+            this.pag = "main";
+            System.out.println("Hola, esta es la accion del boton de home ao x3");
+        });
         
         basura = new JButton();
         basura.setIcon(new ImageIcon("imagenes/trash.png"));
         basura.setBackground(null);
         basura.setBorder(null);
-        basura.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de basura ao x4"));
+        basura.addActionListener(e -> {
+            this.pag = "trash";
+            System.out.println("Hola, esta es la accion del boton de basura ao x4");
+        });
         
         config = new JButton();
         config.setIcon(new ImageIcon("imagenes/gear.png"));
         config.setBackground(null);
         config.setBorder(null);
-        config.addActionListener(e -> System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000"));
+        config.addActionListener(e -> {
+            this.pag = "config";
+            System.out.println("Hola, esta es la accion del boton de configuarcion ao x10000");
+        });
 
         JButton[] imagenes = {hechos, calendario, home, basura, config};
 
@@ -111,7 +136,15 @@ public class GUI {
         //Adición de los elementos al frame
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
-        frame.add(principal, BorderLayout.CENTER);
+        switch (this.pag) {
+            case "main" -> {
+                frame.add(principal, BorderLayout.CENTER);
+            }
+            case "calendar" -> {
+                frame.add(obj, BorderLayout.CENTER);
+            }
+        }
+
         frame.setVisible(true);
     }
 
@@ -235,4 +268,5 @@ public class GUI {
             }
         }
     }
+
 }
