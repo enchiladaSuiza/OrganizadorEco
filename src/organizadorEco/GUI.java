@@ -259,7 +259,7 @@ public class GUI {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 148));
                 this.remove(label);
                 this.add(area);
                 this.add(eliminar);
