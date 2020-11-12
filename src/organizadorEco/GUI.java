@@ -2,10 +2,7 @@ package organizadorEco;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 public class GUI {
     JFrame frame;
@@ -183,23 +180,37 @@ public class GUI {
             repaint();
         }
 
-        private class PendientePanel extends JPanel implements MouseListener {
+        private class PendientePanel extends JPanel implements MouseListener, ItemListener {
             final int WIDTH = 300;
             final int HEIGHT = 40;
             final int SIZE = 15;
+            int day, month, year;
             JLabel label;
             JTextArea area;
             JButton eliminar;
             JButton confirmar;
             JButton guardar;
-            JComboBox dia;
-            JComboBox mes;
-            JComboBox year;
+            JComboBox<Integer> dia;
+            JComboBox<Integer> mes;
+            JComboBox<Integer> anio;
 
             PendientePanel(String descripcion) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
+
+                this.dia = new JComboBox<>();
+                this.mes = new JComboBox<>();
+                this.anio = new JComboBox<>();
+
+                for (int d = 1; d <= 31; ++d) {
+                    if (d <= 12) this.mes.addItem(d);
+                    if (d <= 10) this.anio.addItem((2019 + d));
+                    this.dia.addItem(d);
+                }
+                this.dia.addItemListener(this);
+                this.mes.addItemListener(this);
+                this.anio.addItemListener(this);
 
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -242,6 +253,9 @@ public class GUI {
                 guardar.setBorder(null);
                 guardar.addActionListener(e -> {
                     this.remove(area);
+                    this.remove(dia);
+                    this.remove(mes);
+                    this.remove(anio);
                     this.remove(confirmar);
                     this.remove(eliminar);
                     this.remove(guardar);
@@ -262,6 +276,9 @@ public class GUI {
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 148));
                 this.remove(label);
                 this.add(area);
+                this.add(dia);
+                this.add(mes);
+                this.add(anio);
                 this.add(eliminar);
                 this.add(confirmar);
                 this.add(guardar);
@@ -280,6 +297,13 @@ public class GUI {
 
             @Override
             public void mouseExited(MouseEvent e) { }
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getSource() == this.dia) this.day = this.dia.getSelectedIndex();
+                if (e.getSource() == this.mes) this.month = this.mes.getSelectedIndex();
+                if (e.getSource() == this.anio) this.year = this.anio.getSelectedIndex();
+            }
         }
     }
 
