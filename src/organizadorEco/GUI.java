@@ -136,6 +136,9 @@ public class GUI {
         JButton addOne;
         JPanel escritura;
         JTextField campo;
+        JComboBox dia;
+        JComboBox mes;
+        JComboBox year;
 
         TaskPanel() {
             this.setBackground(new Color(0x27AE6A));
@@ -189,6 +192,9 @@ public class GUI {
             JButton eliminar;
             JButton confirmar;
             JButton guardar;
+            JComboBox dia;
+            JComboBox mes;
+            JComboBox year;
 
             PendientePanel(String descripcion) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
