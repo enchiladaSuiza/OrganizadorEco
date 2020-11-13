@@ -119,12 +119,12 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e.getActionCommand());
+        // System.out.println(e.getActionCommand());
 
         this.remove(this.panelMes);
         this.remove(this.panelNomM);
         repaint();
-        System.out.println("SE eliminaron paneles");
+        // System.out.println("SE eliminaron paneles");
 
         this.makeCalendar();
 

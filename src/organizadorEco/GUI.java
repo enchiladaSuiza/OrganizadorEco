@@ -212,9 +212,13 @@ public class GUI {
                 this.months.addItemListener(this);
                 this.years.addItemListener(this);
 
-                days.setSelectedItem(d);
-                months.setSelectedItem(m);
-                years.setSelectedItem(a);
+                day = d;
+                month = m;
+                year = a;
+
+                days.setSelectedItem(day);
+                months.setSelectedItem(month);
+                years.setSelectedItem(year);
 
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -327,7 +331,7 @@ public class GUI {
         private void actualizarPaneles() {
             this.removeAll();
             for (Pendiente pend : Organizador.realizados) {
-                PendienteDone hecho = new PendienteDone(pend.getDescripcion());
+                PendienteDone hecho = new PendienteDone(pend.getDescripcion(), pend.getFecha());
                 this.add(hecho);
                 this.add(new JLabel(new ImageIcon("imagenes/medal.png")));
             }
@@ -347,10 +351,11 @@ public class GUI {
             final int HEIGHT = 40;
             final int SIZE = 15;
             JLabel label;
+            JLabel date;
             JTextArea area;
             JButton restaurar;
 
-            PendienteDone(String descripcion) {
+            PendienteDone(String descripcion, String fecha) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
@@ -369,11 +374,15 @@ public class GUI {
                 area.setBackground(new Color(0xAFF478));
                 area.setPreferredSize(new Dimension(220, 95));
 
+                date = new JLabel(fecha, SwingConstants.CENTER);
+                date.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                date.setVerticalAlignment(SwingConstants.CENTER);
+
                 restaurar = new JButton(new ImageIcon("imagenes/refresh.png"));
                 restaurar.setBackground(null);
                 restaurar.setBorder(null);
                 restaurar.addActionListener(e -> {
-                    Organizador.marcarNoCompletado(area.getText());
+                    Organizador.marcarNoCompletado(descripcion);
                     actualizarPaneles();
                     task.actualizarPaneles();
                 });
@@ -387,6 +396,7 @@ public class GUI {
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
                 this.remove(label);
                 this.add(area);
+                this.add(date);
                 this.add(restaurar);
                 revalidate();
                 repaint();
