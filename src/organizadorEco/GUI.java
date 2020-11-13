@@ -3,7 +3,6 @@ package organizadorEco;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.time.LocalDate;
 
 public class GUI {
     JFrame frame;
@@ -170,7 +169,11 @@ public class GUI {
         private void actualizarPaneles() {
             this.removeAll();
             for (Pendiente pend : Organizador.pendientes) {
-                PendientePanel panel = new PendientePanel(pend.getDescripcion());
+                String texto = pend.getDescripcion();
+                int a = pend.getYear();
+                int m = pend.getMonth();
+                int d = pend.getDay();
+                PendientePanel panel = new PendientePanel(texto, a, m, d);
                 this.add(panel);
             }
             this.add(addOne);
@@ -192,7 +195,7 @@ public class GUI {
             JComboBox<Integer> months;
             JComboBox<Integer> years;
 
-            PendientePanel(String descripcion) {
+            PendientePanel(String descripcion, int a, int m, int d) {
                 this.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
@@ -200,18 +203,18 @@ public class GUI {
                 this.days = new JComboBox<>();
                 this.months = new JComboBox<>();
                 this.years = new JComboBox<>();
-                for (int d = 1; d <= 31; ++d) {
-                    if (d <= 12) this.months.addItem(d);
-                    if (d <= 10) this.years.addItem((2019 + d));
-                    this.days.addItem(d);
+                for (int i = 1; i <= 31; i++) {
+                    if (i <= 12) this.months.addItem(i);
+                    if (i <= 10) this.years.addItem((2019 + i));
+                    this.days.addItem(i);
                 }
                 this.days.addItemListener(this);
                 this.months.addItemListener(this);
                 this.years.addItemListener(this);
 
-                days.setSelectedIndex(LocalDate.now().getDayOfMonth() - 1);
-                months.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
-                years.setSelectedItem(LocalDate.now().getYear() - 2020);
+                days.setSelectedItem(d);
+                months.setSelectedItem(m);
+                years.setSelectedItem(a);
 
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -231,7 +234,7 @@ public class GUI {
                 eliminar.setBackground(null);
                 eliminar.setBorder(null);
                 eliminar.addActionListener(e -> {
-                    Organizador.modificarPendiente(descripcion, area.getText());
+                    Organizador.modificarPendiente(descripcion, area.getText(), year, month, day);
                     deleted.borrar(area.getText());
                     actualizarPaneles();
                 });
@@ -242,7 +245,7 @@ public class GUI {
                 confirmar.setBackground(null);
                 confirmar.setBorder(null);
                 confirmar.addActionListener(e -> {
-                    Organizador.modificarPendiente(descripcion, area.getText());
+                    Organizador.modificarPendiente(descripcion, area.getText(), year, month, day);
                     done.agregar(area.getText());
                     actualizarPaneles();
                 });
@@ -263,7 +266,7 @@ public class GUI {
                     this.add(label);
                     this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                     label.setText(area.getText());
-                    Organizador.modificarPendiente(descripcion, area.getText());
+                    Organizador.modificarPendiente(descripcion, area.getText(), year, month, day);
                     revalidate();
                     repaint();
                 });
@@ -301,9 +304,9 @@ public class GUI {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() == this.days) this.day = this.days.getSelectedIndex();
-                if (e.getSource() == this.months) this.month = this.months.getSelectedIndex();
-                if (e.getSource() == this.years) this.year = this.years.getSelectedIndex();
+                if (e.getSource() == this.days) this.day = (Integer)this.days.getSelectedItem();
+                if (e.getSource() == this.months) this.month = (Integer)this.months.getSelectedItem();
+                if (e.getSource() == this.years) this.year = (Integer)this.years.getSelectedItem();
             }
         }
     }

@@ -25,11 +25,11 @@ public abstract class Organizador {
         }
     }
 
-    public static void modificarPendiente(String viejaDesc, String nuevaDesc, int year, int month, int day) {
+    public static void modificarPendiente(String viejaDesc, String nuevaDesc, int a, int m, int d) {
         for (Pendiente pendiente : pendientes) {
             if (pendiente.getDescripcion().equals(viejaDesc)) {
                 pendiente.setDescripcion(nuevaDesc);
-                pendiente.setFechaLimite(year, month, day);
+                pendiente.setFechaLimite(a, m, d);
             }
         }
     }
