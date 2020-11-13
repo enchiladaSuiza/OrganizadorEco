@@ -6,24 +6,27 @@ public class Pendiente {
     private String descripcion;
     private LocalDate fechaLimite;
 
-    Pendiente(String descripcion) { this.descripcion = descripcion; }
-
-    Pendiente(String descripcion, int año, int mes, int dia) {
+    Pendiente(String descripcion) {
         this.descripcion = descripcion;
-        this.fechaLimite = LocalDate.of(año, mes, dia);
+        this.fechaLimite = LocalDate.now();
+    }
+
+    Pendiente(String descripcion, int year, int month, int day) {
+        this.descripcion = descripcion;
+        this.fechaLimite = LocalDate.of(year, month, day);
     }
 
     public String getDescripcion() {
         return descripcion;
     }
 
-    public int getAño() { return fechaLimite.getYear(); }
+    public int getYear() { return fechaLimite.getYear(); }
 
-    public int getMes() { return fechaLimite.getMonthValue(); }
+    public int getMonth() { return fechaLimite.getMonthValue(); }
 
-    public int getDia() { return fechaLimite.getDayOfMonth(); }
+    public int getDay() { return fechaLimite.getDayOfMonth(); }
 
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public void setFechaLimite(int año, int mes, int dia) { fechaLimite = LocalDate.of(año, mes, dia); }
+    public void setFechaLimite(int year, int month, int day) { fechaLimite = LocalDate.of(year, month, day); }
 }

@@ -3,6 +3,7 @@ package organizadorEco;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalDate;
 
 public class GUI {
     JFrame frame;
@@ -29,7 +30,7 @@ public class GUI {
 
     public GUI() {
 
-    	//Rectangulo de la aplicación
+    	//Rectangulo de la aplicaciÃ³n
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(350, 600);
@@ -77,7 +78,7 @@ public class GUI {
         footer.setPreferredSize(new Dimension(350, 60));
         footer.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 15));
 
-        //Creación de los "Botones"
+        //CreaciÃ³n de los "Botones"
         hechos = new JButton(new ImageIcon("imagenes/checkbox.png"));
         hechos.setBackground(null);
         hechos.setBorder(null);
@@ -122,7 +123,7 @@ public class GUI {
            footer.add(imagen);
         }
 
-        //Adición de los elementos al frame
+        //AdiciÃ³n de los elementos al frame
         frame.add(principal, BorderLayout.CENTER);
         frame.add(header, BorderLayout.NORTH);
         frame.add(footer, BorderLayout.SOUTH);
@@ -133,9 +134,6 @@ public class GUI {
         JButton addOne;
         JPanel escritura;
         JTextField campo;
-        JComboBox dia;
-        JComboBox mes;
-        JComboBox year;
 
         TaskPanel() {
             this.setBackground(new Color(0x27AE6A));
@@ -190,27 +188,30 @@ public class GUI {
             JButton eliminar;
             JButton confirmar;
             JButton guardar;
-            JComboBox<Integer> dia;
-            JComboBox<Integer> mes;
-            JComboBox<Integer> anio;
+            JComboBox<Integer> days;
+            JComboBox<Integer> months;
+            JComboBox<Integer> years;
 
             PendientePanel(String descripcion) {
-                this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
 
-                this.dia = new JComboBox<>();
-                this.mes = new JComboBox<>();
-                this.anio = new JComboBox<>();
-
+                this.days = new JComboBox<>();
+                this.months = new JComboBox<>();
+                this.years = new JComboBox<>();
                 for (int d = 1; d <= 31; ++d) {
-                    if (d <= 12) this.mes.addItem(d);
-                    if (d <= 10) this.anio.addItem((2019 + d));
-                    this.dia.addItem(d);
+                    if (d <= 12) this.months.addItem(d);
+                    if (d <= 10) this.years.addItem((2019 + d));
+                    this.days.addItem(d);
                 }
-                this.dia.addItemListener(this);
-                this.mes.addItemListener(this);
-                this.anio.addItemListener(this);
+                this.days.addItemListener(this);
+                this.months.addItemListener(this);
+                this.years.addItemListener(this);
+
+                days.setSelectedIndex(LocalDate.now().getDayOfMonth() - 1);
+                months.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
+                years.setSelectedItem(LocalDate.now().getYear() - 2020);
 
                 label = new JLabel(descripcion, SwingConstants.CENTER);
                 label.setFont(new Font(fuente, Font.PLAIN, SIZE));
@@ -253,9 +254,9 @@ public class GUI {
                 guardar.setBorder(null);
                 guardar.addActionListener(e -> {
                     this.remove(area);
-                    this.remove(dia);
-                    this.remove(mes);
-                    this.remove(anio);
+                    this.remove(days);
+                    this.remove(months);
+                    this.remove(years);
                     this.remove(confirmar);
                     this.remove(eliminar);
                     this.remove(guardar);
@@ -273,12 +274,12 @@ public class GUI {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 148));
+                this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 155));
                 this.remove(label);
                 this.add(area);
-                this.add(dia);
-                this.add(mes);
-                this.add(anio);
+                this.add(days);
+                this.add(months);
+                this.add(years);
                 this.add(eliminar);
                 this.add(confirmar);
                 this.add(guardar);
@@ -300,9 +301,9 @@ public class GUI {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() == this.dia) this.day = this.dia.getSelectedIndex();
-                if (e.getSource() == this.mes) this.month = this.mes.getSelectedIndex();
-                if (e.getSource() == this.anio) this.year = this.anio.getSelectedIndex();
+                if (e.getSource() == this.days) this.day = this.days.getSelectedIndex();
+                if (e.getSource() == this.months) this.month = this.months.getSelectedIndex();
+                if (e.getSource() == this.years) this.year = this.years.getSelectedIndex();
             }
         }
     }
@@ -512,6 +513,7 @@ public class GUI {
         ConfigPanel() {
             this.setBackground(new Color(0x27AE6A));
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 20));
+            this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
             custom = new JPanel();
             custom.setBackground(new Color(0xC2FC9E));
