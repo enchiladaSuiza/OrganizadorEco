@@ -4,9 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@SuppressWarnings("ALL")
 public class GUI {
     JFrame frame;
-
     JPanel header;
     JLabel titulo;
     JPanel footer;
@@ -16,19 +16,15 @@ public class GUI {
     JButton basura;
     JButton config;
     JPanel principal;
-
     String fuente = "Montserrat";
     String tituloStr = "Just do that.";
-
     TaskPanel task;
     DonePanel done;
     DeletedPanel deleted;
     ConfigPanel settings;
     Calendario calendar;
 
-
     public GUI() {
-
     	//Rectangulo de la aplicación
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -116,7 +112,6 @@ public class GUI {
         config.addActionListener(e -> pantallas.show(principal, "settings"));
 
         JButton[] imagenes = {hechos, calendario, home, basura, config};
-
         //Adicion de los botones al footer
         for (JButton imagen : imagenes) {
            footer.add(imagen);
@@ -308,7 +303,7 @@ public class GUI {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() == this.days) this.day = (Integer)this.days.getSelectedItem();
+                if (e.getSource() == this.days) this.day = (Integer) this.days.getSelectedItem();
                 if (e.getSource() == this.months) this.month = (Integer)this.months.getSelectedItem();
                 if (e.getSource() == this.years) this.year = (Integer)this.years.getSelectedItem();
             }
@@ -423,7 +418,8 @@ public class GUI {
             this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
             for (int i = 0; i < Organizador.eliminados.size(); i++) {
                 String desc = Organizador.eliminados.get(i).getDescripcion();
-                basura.add(new PendienteDeleted(desc));
+                String fecha = Organizador.eliminados.get(i).getFecha();
+                basura.add(new PendienteDeleted(desc, fecha));
             }
         }
 
@@ -435,7 +431,9 @@ public class GUI {
         private void actualizarPaneles() {
             this.removeAll();
             for (Pendiente pend : Organizador.eliminados) {
-                PendienteDeleted deleted = new PendienteDeleted(pend.getDescripcion());
+                PendienteDeleted deleted = new PendienteDeleted(
+                        pend.getDescripcion(),
+                        pend.getFecha());
                 this.add(deleted);
             }
             revalidate();
@@ -447,12 +445,13 @@ public class GUI {
             final int HEIGHT = 40;
             final int SIZE = 15;
             JLabel label;
+            JLabel date;
             JTextArea area;
             JButton recuperar;
             JButton descartar;
 
-            PendienteDeleted(String descripcion) {
-                this.setLayout(new FlowLayout(FlowLayout.CENTER, 60, 10));
+            PendienteDeleted(String descripcion, String fecha) {
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
 
@@ -469,6 +468,11 @@ public class GUI {
                 area.setEditable(false);
                 area.setBackground(new Color(0xAFF478));
                 area.setPreferredSize(new Dimension(280, 95));
+
+                date = new JLabel(fecha);
+                date.setFont(new Font(fuente, Font.PLAIN, SIZE));
+                date.setVerticalAlignment(SwingConstants.CENTER);
+                date.setBackground(new Color(0xF8DB15));
 
                 recuperar = new JButton(new ImageIcon("imagenes/refresh.png"));
                 recuperar.setBackground(null);
@@ -496,6 +500,7 @@ public class GUI {
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 118));
                 this.remove(label);
                 this.add(area);
+                this.add(date);
                 this.add(recuperar);
                 this.add(descartar);
                 revalidate();
@@ -547,5 +552,4 @@ public class GUI {
             this.add(custom);
         }
     }
-
 }
