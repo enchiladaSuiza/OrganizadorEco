@@ -32,5 +32,7 @@ public class Pendiente {
 
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public void setFechaLimite(int year, int month, int day) { fechaLimite = LocalDate.of(year, month, day); }
+    public void setFechaLimite(int year, int month, int day) {
+        fechaLimite = LocalDate.of(year, month, day);
+    }
 }

@@ -187,11 +187,11 @@ public class GUI {
             JButton confirmar;
             JButton guardar;
             JComboBox<Integer> days;
-            JComboBox<Integer> months;
+            JComboBox<String> months;
             JComboBox<Integer> years;
 
             PendientePanel(String descripcion, int a, int m, int d) {
-                this.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 10));
+                this.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
                 this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
                 this.setBackground(new Color(0xAFF478));
 
@@ -199,7 +199,7 @@ public class GUI {
                 this.months = new JComboBox<>();
                 this.years = new JComboBox<>();
                 for (int i = 1; i <= 31; i++) {
-                    if (i <= 12) this.months.addItem(i);
+                    if (i <= 12) this.months.addItem(Calendario.mes[i - 1]);
                     if (i <= 10) this.years.addItem((2019 + i));
                     this.days.addItem(i);
                 }
@@ -212,7 +212,7 @@ public class GUI {
                 year = a;
 
                 days.setSelectedItem(day);
-                months.setSelectedItem(month);
+                months.setSelectedItem(Calendario.mes[month - 1]);
                 years.setSelectedItem(year);
 
                 label = new JLabel(descripcion, SwingConstants.CENTER);
@@ -303,9 +303,15 @@ public class GUI {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() == this.days) this.day = (Integer) this.days.getSelectedItem();
-                if (e.getSource() == this.months) this.month = (Integer)this.months.getSelectedItem();
-                if (e.getSource() == this.years) this.year = (Integer)this.years.getSelectedItem();
+                if (e.getSource() == this.days) {
+                    this.day = (Integer)this.days.getSelectedItem();
+                }
+                if (e.getSource() == this.months) {
+                    this.month = this.months.getSelectedIndex() + 1;
+                }
+                if (e.getSource() == this.years) {
+                    this.year = (Integer)this.years.getSelectedItem();
+                }
             }
         }
     }

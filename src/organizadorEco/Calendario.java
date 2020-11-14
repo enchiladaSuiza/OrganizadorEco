@@ -12,12 +12,13 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 public class Calendario extends JPanel implements ActionListener, ItemListener {
+    static final String[] mes = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
     private final JLabel[] labelMeses;
     private final JLabel[] labelDias;
     private final JButton[] dias;
     private final JPanel panelMes, panelNomM;
     private final JComboBox<String> month;
-    private final String[] mes = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
     private String op = "";
     private int pos = 0;
 
