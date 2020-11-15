@@ -16,8 +16,10 @@ public class GUI {
     JButton basura;
     JButton config;
     JPanel principal;
-    String fuente = "Montserrat";
+
+    static String fuente = "Montserrat";
     String tituloStr = "Just do that.";
+
     TaskPanel task;
     DonePanel done;
     DeletedPanel deleted;

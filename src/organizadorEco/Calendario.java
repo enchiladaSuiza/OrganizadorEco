@@ -1,141 +1,119 @@
 package organizadorEco;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
+
 
 public class Calendario extends JPanel implements ActionListener, ItemListener {
     static final String[] mes = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-    private final JLabel[] labelMeses;
-    private final JLabel[] labelDias;
-    private final JButton[] dias;
-    private final JPanel panelMes, panelNomM;
-    private final JComboBox<String> month;
-    private String op = "";
-    private int pos = 0;
+    final String[] days = {"DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"};
+    JLabel[] labelDia;
+    JLabel labelMes;
+    JPanel panelMes;
+    JButton[] dias;
+    JComboBox<String> month;
+    JComboBox<Integer> year;
+    LocalDate hoy;
 
     Calendario() {
-        this.labelMeses = new JLabel[12];
-        this.labelDias = new JLabel[7];
-        this.dias = new JButton[31];
-        this.month = new JComboBox<>();
-        this.month.addActionListener(this);
-
-        this.panelMes = new JPanel(new GridLayout(6, 7));
-        this.panelMes.setBackground(new Color(0x27AE60));
-
-        this.panelNomM = new JPanel(new BorderLayout());
-        this.panelNomM.setBackground(new Color(0x27AE60));
-
-
-        setLayout(null);
+        setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         setBackground(new Color(0x27AE60));
 
-        Date date = new Date();
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        for(int x = 0; x < 12; ++x) {
-            this.labelMeses[x] = new JLabel(mes[x] + " " + localDate.getYear());
-            this.labelMeses[x].setFont(new Font("ComicSansMS", Font.BOLD, 14));
-            this.labelMeses[x].setForeground(Color.BLACK);
-            this.labelMeses[x].setPreferredSize(new Dimension(200, 30));
+        panelMes = new JPanel();
+        panelMes.setLayout(new GridLayout(0, 7, 5, 5));
+        panelMes.setBackground(new Color(0x27AE60));
+
+        labelMes = new JLabel();
+        labelMes.setFont(new Font(GUI.fuente, Font.BOLD, 14));
+        labelMes.setPreferredSize(new Dimension(200, 30));
+
+        labelDia = new JLabel[7];
+        for (int i = 0; i < 7; i++) {
+            labelDia[i] = new JLabel(days[i], JLabel.CENTER);
+            labelDia[i].setPreferredSize(new Dimension(35, 20));
         }
 
-        for(int n = 0; n < 7; ++n) {
-            String[] days = {" DOM"," LUN"," MAR"," MIE"," JUE"," VIE"," SAB"};
-            this.labelDias[n] = new JLabel(days[n]);
-            this.labelDias[n].setFont(new Font("ComicSansMS", Font.BOLD, 14));
-            this.labelDias[n].setForeground(Color.BLACK);
+        month = new JComboBox<>(mes);
+
+        Integer[] a = new Integer[10];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = 2020 + i;
         }
 
-        for(int d = 0; d < 31; ++d) {
-            this.dias[d] = new JButton(String.valueOf(d+1));
-            this.dias[d].setName(String.valueOf(d+1));
-            this.dias[d].addActionListener(this);
-            this.dias[d].setBorder(new BevelBorder(BevelBorder.RAISED));
-            this.dias[d].setBackground(new Color(140, 246, 119));
-            this.dias[d].setFont(new Font("ComicSansMS", Font.BOLD, 11));
-            this.dias[d].setForeground(Color.BLACK);
+        year = new JComboBox<>(a);
+
+        month.addActionListener(this);
+        month.addItemListener(this);
+        year.addActionListener(this);
+        year.addItemListener(this);
+
+        dias = new JButton[31];
+        for (int d = 0; d < 31; ++d) {
+            dias[d] = new JButton(String.valueOf(d + 1));
+            dias[d].setName(String.valueOf(d + 1));
+            dias[d].setBorder(null);
+            dias[d].setBackground(new Color(140, 246, 119));
+            dias[d].setPreferredSize(new Dimension(40, 40));
+            dias[d].setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+            dias[d].addActionListener(this);
         }
 
-        for(int w = 0; w < 12; ++w) {
-            this.month.addItem(mes[w]);
-        }
-        this.month.addItemListener(this);
+        hoy = LocalDate.now();
+        LocalDate primerDia = LocalDate.of(hoy.getYear(), hoy.getMonth(), 1);
+        int diaSemana = primerDia.getDayOfWeek().getValue();
+        System.out.println(diaSemana);
+        int duracion = hoy.getMonth().length(hoy.isLeapYear());
+        System.out.println(duracion);
 
-        this.makeCalendar();
+        makeCalendar(duracion, diaSemana);
+        month.setSelectedIndex(hoy.getMonthValue() - 1);
+        year.setSelectedItem(hoy.getYear());
+
+        this.add(month);
+        this.add(year);
+        this.add(panelMes);
     }
 
-    private void makeCalendar() {
-        this.fillPanelNombreM();
-        this.fillPanelMes();
-
-        add(this.panelMes);
-        add(this.panelNomM);
-        add(this.month);
-
-        this.panelNomM.setBounds(20, 30, 130, 30);
-        this.panelMes.setBounds(20, 70, 300, 300);
-        this.month.setBounds(160, 30, 150, 30);
-    }
-
-    private void fillPanelNombreM() {
-        this.panelNomM.removeAll();
-
-        for(int x = 0; x < 12; ++x) {
-            if(this.op.equals(mes[x])) this.pos = x;
+    private void makeCalendar(int duracion, int diaSemana) {
+        panelMes.removeAll();
+        for (JLabel label : labelDia) {
+            panelMes.add(label);
         }
 
-        this.panelNomM.add(this.labelMeses[this.pos], BorderLayout.CENTER);
-    }
-
-    private void fillPanelMes() {
-        this.panelMes.removeAll();
-
-        for (JLabel x : this.labelDias) {
-            this.panelMes.add(x);
-        }
-
-        if(this.pos == 1) {
-            for(int p = 0; p < 28; ++p) {
-                this.panelMes.add(this.dias[p]);
-            }
-        } else if(this.pos == 3 || this.pos == 5 || this.pos == 8 || this.pos == 10) {
-            for(int p = 0; p < 30; ++p) {
-                this.panelMes.add(this.dias[p]);
-            }
-        } else {
-            for(int p = 0; p < 31; ++p) {
-                this.panelMes.add(this.dias[p]);
+        if (diaSemana != 7) {
+            for (int i = 0; i < diaSemana; i++) {
+                JPanel dummy = new JPanel();
+                dummy.setBackground(new Color(0x27AE60));
+                panelMes.add(dummy);
             }
         }
+
+        for (int d = 0; d < duracion; ++d) {
+            panelMes.add(dias[d]);
+        }
+        revalidate();
+        repaint();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // System.out.println(e.getActionCommand());
-
-        this.remove(this.panelMes);
-        this.remove(this.panelNomM);
-        repaint();
-        // System.out.println("SE eliminaron paneles");
-
-        this.makeCalendar();
-
-        repaint();
+        if (e.getSource() == year || e.getSource() == month) {
+            int y = (Integer)year.getSelectedItem();
+            int m = month.getSelectedIndex() + 1;
+            LocalDate primerDia = LocalDate.of(y, m, 1);
+            int diaSemana = primerDia.getDayOfWeek().getValue();
+            int duracion = primerDia.getMonth().length(primerDia.isLeapYear());
+            System.out.println(diaSemana);
+            System.out.println(duracion);
+            makeCalendar(duracion, diaSemana);
+        }
     }
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        if (e.getSource() == this.month) {
-            this.op = (String) this.month.getSelectedItem();
-        }
+
     }
 }
