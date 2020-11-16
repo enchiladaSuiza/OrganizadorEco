@@ -1,140 +1,234 @@
 package organizadorEco;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 
-public class Calendario extends JPanel implements ActionListener, ItemListener {
-    private final JLabel[] labelMeses;
-    private final JLabel[] labelDias;
-    private final JButton[] dias;
-    private final JPanel panelMes, panelNomM;
-    private final JComboBox<String> month;
-    private final String[] mes = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
-    private String op = "";
-    private int pos = 0;
+
+public class Calendario extends JPanel implements ActionListener {
+    static final String[] mes = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+    final String[] days = {"DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"};
+    boolean mesVista = true;
+
+    JLabel[] labelDias;
+    JPanel panelMes;
+    JPanel comboContainer;
+    JButton[] dias;
+    JComboBox<String> month;
+    JComboBox<Integer> year;
+    LocalDate hoy;
+
+    JButton addOne;
+    JButton regresar;
+    JButton presionado;
+    JLabel fecha;
+    JPanel escritura;
+    JTextField campo;
+
+    int y, m, d;
 
     Calendario() {
-        this.labelMeses = new JLabel[12];
-        this.labelDias = new JLabel[7];
-        this.dias = new JButton[31];
-        this.month = new JComboBox<>();
-        this.month.addActionListener(this);
+        this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        this.setBackground(GUI.colorPrincipal);
 
-        this.panelMes = new JPanel(new GridLayout(6, 7));
-        this.panelMes.setBackground(new Color(0x27AE60));
+        panelMes = new JPanel();
+        panelMes.setLayout(new GridLayout(0, 7, 5, 5));
+        panelMes.setBackground(GUI.colorPrincipal);
 
-        this.panelNomM = new JPanel(new BorderLayout());
-        this.panelNomM.setBackground(new Color(0x27AE60));
+        comboContainer = new JPanel();
+        comboContainer.setBackground(GUI.colorPrincipal);
+        comboContainer.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
+        addOne = new JButton();
+        addOne.setIcon(new ImageIcon("imagenes/plus.png"));
+        addOne.setBackground(null);
+        addOne.setBorder(null);
+        addOne.addActionListener(this);
 
-        setLayout(null);
-        setBackground(new Color(0x27AE60));
+        regresar = new JButton();
+        regresar.setIcon(new ImageIcon("imagenes/undo.png"));
+        regresar.setBackground(null);
+        regresar.setBorder(null);
+        regresar.addActionListener(this);
 
-        Date date = new Date();
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        for(int x = 0; x < 12; ++x) {
-            this.labelMeses[x] = new JLabel(mes[x] + " " + localDate.getYear());
-            this.labelMeses[x].setFont(new Font("ComicSansMS", Font.BOLD, 14));
-            this.labelMeses[x].setForeground(Color.BLACK);
-            this.labelMeses[x].setPreferredSize(new Dimension(200, 30));
+        campo = new JTextField();
+        campo.setPreferredSize(new Dimension(280, 30));
+        campo.setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+        campo.addActionListener(f -> {
+            String texto = campo.getText();
+            Organizador.agregarPendiente(texto, y, m, d);
+            actualizarPaneles();
+            GUI.task.actualizarPaneles();
+        });
+
+        escritura = new JPanel();
+        escritura.setPreferredSize(new Dimension(300, 40));
+        escritura.setBackground(GUI.colorTerciario);
+        escritura.add(campo);
+
+        labelDias = new JLabel[7];
+        for (int i = 0; i < 7; i++) {
+            labelDias[i] = new JLabel(days[i], JLabel.CENTER);
+            labelDias[i].setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+            labelDias[i].setPreferredSize(new Dimension(35, 20));
         }
 
-        for(int n = 0; n < 7; ++n) {
-            String[] days = {" DOM"," LUN"," MAR"," MIE"," JUE"," VIE"," SAB"};
-            this.labelDias[n] = new JLabel(days[n]);
-            this.labelDias[n].setFont(new Font("ComicSansMS", Font.BOLD, 14));
-            this.labelDias[n].setForeground(Color.BLACK);
+        month = new JComboBox<>(mes);
+        month.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        month.setBackground(GUI.colorTerciario);
+        month.addActionListener(this);
+
+        Integer[] a = new Integer[10];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = 2020 + i;
         }
 
-        for(int d = 0; d < 31; ++d) {
-            this.dias[d] = new JButton(String.valueOf(d+1));
-            this.dias[d].setName(String.valueOf(d+1));
-            this.dias[d].addActionListener(this);
-            this.dias[d].setBorder(new BevelBorder(BevelBorder.RAISED));
-            this.dias[d].setBackground(new Color(140, 246, 119));
-            this.dias[d].setFont(new Font("ComicSansMS", Font.BOLD, 11));
-            this.dias[d].setForeground(Color.BLACK);
+        year = new JComboBox<>(a);
+        year.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        year.setBackground(GUI.colorTerciario);
+        year.addActionListener(this);
+
+        dias = new JButton[31];
+        for (int d = 0; d < 31; ++d) {
+            dias[d] = new JButton(String.valueOf(d + 1));
+            dias[d].setName(String.valueOf(d + 1));
+            dias[d].setBorder(null);
+            dias[d].setBackground(GUI.colorTerciario);
+            dias[d].setPreferredSize(new Dimension(40, 40));
+            dias[d].setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+            dias[d].addActionListener(this);
         }
 
-        for(int w = 0; w < 12; ++w) {
-            this.month.addItem(mes[w]);
-        }
-        this.month.addItemListener(this);
+        hoy = LocalDate.now();
+        LocalDate primerDia = LocalDate.of(hoy.getYear(), hoy.getMonth(), 1);
+        int diaSemana = primerDia.getDayOfWeek().getValue();
+        int duracion = hoy.getMonth().length(hoy.isLeapYear());
 
-        this.makeCalendar();
+        fecha = new JLabel();
+        fecha.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        fecha.setText(hoy.toString());
+        fecha.setOpaque(true);
+        fecha.setBackground(GUI.colorCuaternario);
+        fecha.setPreferredSize(new Dimension(90, 30));
+        fecha.setHorizontalAlignment(JLabel.CENTER);
+        fecha.setVerticalAlignment(JLabel.CENTER);
+
+        makeCalendar(duracion, diaSemana);
+        month.setSelectedIndex(hoy.getMonthValue() - 1);
+        year.setSelectedItem(hoy.getYear());
+
+        comboContainer.add(month);
+        comboContainer.add(year);
+        this.add(comboContainer);
+        this.add(panelMes);
+        revalidate();
+        repaint();
     }
 
-    private void makeCalendar() {
-        this.fillPanelNombreM();
-        this.fillPanelMes();
-
-        add(this.panelMes);
-        add(this.panelNomM);
-        add(this.month);
-
-        this.panelNomM.setBounds(20, 30, 130, 30);
-        this.panelMes.setBounds(20, 70, 300, 300);
-        this.month.setBounds(160, 30, 150, 30);
+    public void actualizarPaneles() {
+        if (!mesVista) {
+            this.removeAll();
+            LocalDate localDate = LocalDate.of(y, m, d);
+            fecha.setText(localDate.toString());
+            this.add(fecha);
+            for (Pendiente pend : Organizador.pendientes) {
+                if (pend.getFecha().equals(localDate)) {
+                    String desc = pend.getDescripcion();
+                    PendientePanel pendPan = new PendientePanel(desc, y, m, d);
+                    this.add(pendPan);
+                }
+            }
+            this.add(addOne);
+            this.add(regresar);
+            revalidate();
+            repaint();
+        }
     }
 
-    private void fillPanelNombreM() {
-        this.panelNomM.removeAll();
+    /* public void actualizarPaneles() {
+        if (!mesVista) {
+            this.removeAll();
+            LocalDate localDate = LocalDate.now();
+            fecha.setText(localDate.toString());
+            this.add(fecha);
+            for (Pendiente pend : Organizador.pendientes) {
+                if (pend.getFecha().equals(localDate)) {
+                    String desc = pend.getDescripcion();
+                    int year = hoy.getYear();
+                    int month = hoy.getMonthValue();
+                    int day = hoy.getDayOfMonth();
+                    PendientePanel pendPan = new PendientePanel(desc, year, month, day);
+                    this.add(pendPan);
+                }
+            }
+            this.add(addOne);
+            this.add(regresar);
+            revalidate();
+            repaint();
+        }
+    } */
 
-        for(int x = 0; x < 12; ++x) {
-            if(this.op.equals(mes[x])) this.pos = x;
+    private void makeCalendar(int duracion, int diaSemana) {
+        panelMes.removeAll();
+        for (JLabel label : labelDias) {
+            panelMes.add(label);
         }
 
-        this.panelNomM.add(this.labelMeses[this.pos], BorderLayout.CENTER);
+        if (diaSemana != 7) {
+            for (int i = 0; i < diaSemana; i++) {
+                JPanel dummy = new JPanel();
+                dummy.setBackground(GUI.colorPrincipal);
+                panelMes.add(dummy);
+            }
+        }
+
+        for (int d = 0; d < duracion; ++d) {
+            panelMes.add(dias[d]);
+        }
+        revalidate();
+        repaint();
     }
 
-    private void fillPanelMes() {
-        this.panelMes.removeAll();
-
-        for (JLabel x : this.labelDias) {
-            this.panelMes.add(x);
-        }
-
-        if(this.pos == 1) {
-            for(int p = 0; p < 28; ++p) {
-                this.panelMes.add(this.dias[p]);
-            }
-        } else if(this.pos == 3 || this.pos == 5 || this.pos == 8 || this.pos == 10) {
-            for(int p = 0; p < 30; ++p) {
-                this.panelMes.add(this.dias[p]);
-            }
-        } else {
-            for(int p = 0; p < 31; ++p) {
-                this.panelMes.add(this.dias[p]);
-            }
-        }
+    public void regresarAlCalendario() {
+        mesVista = true;
+        this.removeAll();
+        this.add(comboContainer);
+        this.add(panelMes);
+        revalidate();
+        repaint();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e.getActionCommand());
+        y = (int)year.getSelectedItem();
+        m = month.getSelectedIndex() + 1;
 
-        this.remove(this.panelMes);
-        this.remove(this.panelNomM);
-        repaint();
-        System.out.println("SE eliminaron paneles");
-
-        this.makeCalendar();
-
-        repaint();
-    }
-
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        if (e.getSource() == this.month) {
-            this.op = (String) this.month.getSelectedItem();
+        if (e.getSource() == year || e.getSource() == month) {
+            LocalDate primerDia = LocalDate.of(y, m, 1);
+            int diaSemana = primerDia.getDayOfWeek().getValue();
+            int duracion = primerDia.getMonth().length(primerDia.isLeapYear());
+            makeCalendar(duracion, diaSemana);
         }
+
+        else if (e.getSource() == addOne) {
+            this.remove(addOne);
+            this.remove(regresar);
+            this.add(escritura);
+        }
+
+        else if (e.getSource() == regresar) {
+            regresarAlCalendario();
+        }
+
+        else {
+            mesVista = false;
+            presionado = (JButton)e.getSource();
+            d = Integer.parseInt(presionado.getText());
+            actualizarPaneles();
+        }
+        revalidate();
+        repaint();
     }
 }
