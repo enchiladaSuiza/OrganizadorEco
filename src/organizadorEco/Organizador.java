@@ -12,10 +12,24 @@ public abstract class Organizador {
         pendientes.add(pendiente);
     }
 
+    public static void agregarPendiente(String desc, int year, int month, int day) {
+        Pendiente pend = new Pendiente(desc, year, month, day);
+        pendientes.add(pend);
+    }
+
     public static void modificarPendiente(String viejaDesc, String nuevaDesc) {
         for (Pendiente pendiente : pendientes) {
             if (pendiente.getDescripcion().equals(viejaDesc)) {
                 pendiente.setDescripcion(nuevaDesc);
+            }
+        }
+    }
+
+    public static void modificarPendiente(String viejaDesc, String nuevaDesc, int year, int month, int day) {
+        for (Pendiente pendiente : pendientes) {
+            if (pendiente.getDescripcion().equals(viejaDesc)) {
+                pendiente.setDescripcion(nuevaDesc);
+                pendiente.setFechaLimite(year, month, day);
             }
         }
     }
