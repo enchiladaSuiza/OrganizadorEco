@@ -28,14 +28,12 @@ public abstract class Organizador {
                     while (data != '\t' && data != -1) {
                         desc.append((char) data);
                         data = leerArchivo.read();
-                        System.out.println((char)data);
                     }
                     data = leerArchivo.read();
                     StringBuilder fechaStr = new StringBuilder();
                     while (data != '\n' && data != '\r' && data != -1) {
                         fechaStr.append((char) data);
                         data = leerArchivo.read();
-                        System.out.println((char)data);
                     }
                     LocalDate fecha = LocalDate.parse(fechaStr.toString());
                     Pendiente pend = new Pendiente(desc.toString(), fecha);

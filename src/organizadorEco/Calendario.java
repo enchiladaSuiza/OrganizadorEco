@@ -71,10 +71,14 @@ public class Calendario extends JPanel implements ActionListener {
         labelDias = new JLabel[7];
         for (int i = 0; i < 7; i++) {
             labelDias[i] = new JLabel(days[i], JLabel.CENTER);
+            labelDias[i].setFont(new Font(GUI.fuente, Font.PLAIN, 12));
             labelDias[i].setPreferredSize(new Dimension(35, 20));
         }
 
         month = new JComboBox<>(mes);
+        month.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        month.setBackground(GUI.colorTerciario);
+        month.addActionListener(this);
 
         Integer[] a = new Integer[10];
         for (int i = 0; i < a.length; i++) {
@@ -82,8 +86,8 @@ public class Calendario extends JPanel implements ActionListener {
         }
 
         year = new JComboBox<>(a);
-
-        month.addActionListener(this);
+        year.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        year.setBackground(GUI.colorTerciario);
         year.addActionListener(this);
 
         dias = new JButton[31];
@@ -105,6 +109,11 @@ public class Calendario extends JPanel implements ActionListener {
         fecha = new JLabel();
         fecha.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
         fecha.setText(hoy.toString());
+        fecha.setOpaque(true);
+        fecha.setBackground(GUI.colorCuaternario);
+        fecha.setPreferredSize(new Dimension(90, 30));
+        fecha.setHorizontalAlignment(JLabel.CENTER);
+        fecha.setVerticalAlignment(JLabel.CENTER);
 
         makeCalendar(duracion, diaSemana);
         month.setSelectedIndex(hoy.getMonthValue() - 1);

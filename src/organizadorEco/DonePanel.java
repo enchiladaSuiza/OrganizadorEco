@@ -66,7 +66,6 @@ public class DonePanel extends JPanel {
 
             date = new JLabel(fecha);
             date.setFont(new Font(GUI.fuente, Font.PLAIN, SIZE));
-            date.setVerticalAlignment(SwingConstants.CENTER);
             date.setOpaque(true);
             date.setBackground(GUI.colorCuaternario);
             date.setPreferredSize(new Dimension(90, 30));

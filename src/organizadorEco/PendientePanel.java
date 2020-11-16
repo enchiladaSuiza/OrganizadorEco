@@ -27,13 +27,13 @@ public class PendientePanel extends JPanel implements MouseListener, ItemListene
         months = new JComboBox<>();
         years = new JComboBox<>();
         for (int i = 1; i <= 31; i++) {
-            if (i <= 12) this.months.addItem(Calendario.mes[i - 1]);
-            if (i <= 10) this.years.addItem((2019 + i));
-            this.days.addItem(i);
+            if (i <= 12) months.addItem(Calendario.mes[i - 1]);
+            if (i <= 10) years.addItem((2019 + i));
+            days.addItem(i);
         }
-        this.days.addItemListener(this);
-        this.months.addItemListener(this);
-        this.years.addItemListener(this);
+        days.addItemListener(this);
+        months.addItemListener(this);
+        years.addItemListener(this);
 
         day = d;
         month = m;
@@ -42,6 +42,14 @@ public class PendientePanel extends JPanel implements MouseListener, ItemListene
         days.setSelectedItem(day);
         months.setSelectedItem(Calendario.mes[month - 1]);
         years.setSelectedItem(year);
+
+        days.setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+        months.setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+        years.setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+
+        days.setBackground(GUI.colorCuaternario);
+        months.setBackground(GUI.colorCuaternario);
+        years.setBackground(GUI.colorCuaternario);
 
         label = new JLabel(descripcion, SwingConstants.CENTER);
         label.setFont(new Font(GUI.fuente, Font.PLAIN, SIZE));
@@ -108,14 +116,14 @@ public class PendientePanel extends JPanel implements MouseListener, ItemListene
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 155));
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 150));
         this.remove(label);
         this.add(area);
         this.add(days);
         this.add(months);
         this.add(years);
-        this.add(eliminar);
         this.add(confirmar);
+        this.add(eliminar);
         this.add(guardar);
         revalidate();
         repaint();
