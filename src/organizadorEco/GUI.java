@@ -2,8 +2,10 @@ package organizadorEco;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
-public class GUI {
+public class GUI implements WindowListener {
     JFrame frame;
     JPanel header;
     JLabel titulo;
@@ -38,6 +40,7 @@ public class GUI {
         frame.setTitle("Organizador");
         frame.setLayout(new BorderLayout(0, 0));
         frame.setLocationRelativeTo(null);
+        frame.addWindowListener(this);
 
         //Panel Principal
         principal = new JPanel();
@@ -129,4 +132,28 @@ public class GUI {
         frame.add(footer, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
+
+    @Override
+    public void windowOpened(WindowEvent e) { }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        Organizador.escribirArchivos();
+        frame.dispose();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) { }
+
+    @Override
+    public void windowIconified(WindowEvent e) { }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) { }
+
+    @Override
+    public void windowActivated(WindowEvent e) { }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) { }
 }
