@@ -6,34 +6,72 @@ import java.time.LocalDate;
 import javax.swing.*;
 
 
-public class Calendario extends JPanel implements ActionListener, ItemListener {
+public class Calendario extends JPanel implements ActionListener {
     static final String[] mes = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
     final String[] days = {"DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"};
-    JLabel[] labelDia;
-    JLabel labelMes;
+    boolean mesVista = true;
+
+    JLabel[] labelDias;
     JPanel panelMes;
+    JPanel comboContainer;
     JButton[] dias;
     JComboBox<String> month;
     JComboBox<Integer> year;
     LocalDate hoy;
 
+    JButton addOne;
+    JButton regresar;
+    JButton presionado;
+    JLabel fecha;
+    JPanel escritura;
+    JTextField campo;
+
+    int y, m, d;
+
     Calendario() {
-        setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        setBackground(new Color(0x27AE60));
+        this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        this.setBackground(GUI.colorPrincipal);
 
         panelMes = new JPanel();
         panelMes.setLayout(new GridLayout(0, 7, 5, 5));
-        panelMes.setBackground(new Color(0x27AE60));
+        panelMes.setBackground(GUI.colorPrincipal);
 
-        labelMes = new JLabel();
-        labelMes.setFont(new Font(GUI.fuente, Font.BOLD, 14));
-        labelMes.setPreferredSize(new Dimension(200, 30));
+        comboContainer = new JPanel();
+        comboContainer.setBackground(GUI.colorPrincipal);
+        comboContainer.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        labelDia = new JLabel[7];
+        addOne = new JButton();
+        addOne.setIcon(new ImageIcon("imagenes/plus.png"));
+        addOne.setBackground(null);
+        addOne.setBorder(null);
+        addOne.addActionListener(this);
+
+        regresar = new JButton();
+        regresar.setIcon(new ImageIcon("imagenes/undo.png"));
+        regresar.setBackground(null);
+        regresar.setBorder(null);
+        regresar.addActionListener(this);
+
+        campo = new JTextField();
+        campo.setPreferredSize(new Dimension(280, 30));
+        campo.setFont(new Font(GUI.fuente, Font.PLAIN, 12));
+        campo.addActionListener(f -> {
+            String texto = campo.getText();
+            Organizador.agregarPendiente(texto, y, m, d);
+            actualizarPaneles();
+            GUI.task.actualizarPaneles();
+        });
+
+        escritura = new JPanel();
+        escritura.setPreferredSize(new Dimension(300, 40));
+        escritura.setBackground(GUI.colorTerciario);
+        escritura.add(campo);
+
+        labelDias = new JLabel[7];
         for (int i = 0; i < 7; i++) {
-            labelDia[i] = new JLabel(days[i], JLabel.CENTER);
-            labelDia[i].setPreferredSize(new Dimension(35, 20));
+            labelDias[i] = new JLabel(days[i], JLabel.CENTER);
+            labelDias[i].setPreferredSize(new Dimension(35, 20));
         }
 
         month = new JComboBox<>(mes);
@@ -46,16 +84,14 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
         year = new JComboBox<>(a);
 
         month.addActionListener(this);
-        month.addItemListener(this);
         year.addActionListener(this);
-        year.addItemListener(this);
 
         dias = new JButton[31];
         for (int d = 0; d < 31; ++d) {
             dias[d] = new JButton(String.valueOf(d + 1));
             dias[d].setName(String.valueOf(d + 1));
             dias[d].setBorder(null);
-            dias[d].setBackground(new Color(140, 246, 119));
+            dias[d].setBackground(GUI.colorTerciario);
             dias[d].setPreferredSize(new Dimension(40, 40));
             dias[d].setFont(new Font(GUI.fuente, Font.PLAIN, 12));
             dias[d].addActionListener(this);
@@ -64,29 +100,77 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
         hoy = LocalDate.now();
         LocalDate primerDia = LocalDate.of(hoy.getYear(), hoy.getMonth(), 1);
         int diaSemana = primerDia.getDayOfWeek().getValue();
-        System.out.println(diaSemana);
         int duracion = hoy.getMonth().length(hoy.isLeapYear());
-        System.out.println(duracion);
+
+        fecha = new JLabel();
+        fecha.setFont(new Font(GUI.fuente, Font.PLAIN, 14));
+        fecha.setText(hoy.toString());
 
         makeCalendar(duracion, diaSemana);
         month.setSelectedIndex(hoy.getMonthValue() - 1);
         year.setSelectedItem(hoy.getYear());
 
-        this.add(month);
-        this.add(year);
+        comboContainer.add(month);
+        comboContainer.add(year);
+        this.add(comboContainer);
         this.add(panelMes);
+        revalidate();
+        repaint();
     }
+
+    public void actualizarPaneles() {
+        if (!mesVista) {
+            this.removeAll();
+            LocalDate localDate = LocalDate.of(y, m, d);
+            fecha.setText(localDate.toString());
+            this.add(fecha);
+            for (Pendiente pend : Organizador.pendientes) {
+                if (pend.getFecha().equals(localDate)) {
+                    String desc = pend.getDescripcion();
+                    PendientePanel pendPan = new PendientePanel(desc, y, m, d);
+                    this.add(pendPan);
+                }
+            }
+            this.add(addOne);
+            this.add(regresar);
+            revalidate();
+            repaint();
+        }
+    }
+
+    /* public void actualizarPaneles() {
+        if (!mesVista) {
+            this.removeAll();
+            LocalDate localDate = LocalDate.now();
+            fecha.setText(localDate.toString());
+            this.add(fecha);
+            for (Pendiente pend : Organizador.pendientes) {
+                if (pend.getFecha().equals(localDate)) {
+                    String desc = pend.getDescripcion();
+                    int year = hoy.getYear();
+                    int month = hoy.getMonthValue();
+                    int day = hoy.getDayOfMonth();
+                    PendientePanel pendPan = new PendientePanel(desc, year, month, day);
+                    this.add(pendPan);
+                }
+            }
+            this.add(addOne);
+            this.add(regresar);
+            revalidate();
+            repaint();
+        }
+    } */
 
     private void makeCalendar(int duracion, int diaSemana) {
         panelMes.removeAll();
-        for (JLabel label : labelDia) {
+        for (JLabel label : labelDias) {
             panelMes.add(label);
         }
 
         if (diaSemana != 7) {
             for (int i = 0; i < diaSemana; i++) {
                 JPanel dummy = new JPanel();
-                dummy.setBackground(new Color(0x27AE60));
+                dummy.setBackground(GUI.colorPrincipal);
                 panelMes.add(dummy);
             }
         }
@@ -98,22 +182,44 @@ public class Calendario extends JPanel implements ActionListener, ItemListener {
         repaint();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == year || e.getSource() == month) {
-            int y = (Integer)year.getSelectedItem();
-            int m = month.getSelectedIndex() + 1;
-            LocalDate primerDia = LocalDate.of(y, m, 1);
-            int diaSemana = primerDia.getDayOfWeek().getValue();
-            int duracion = primerDia.getMonth().length(primerDia.isLeapYear());
-            System.out.println(diaSemana);
-            System.out.println(duracion);
-            makeCalendar(duracion, diaSemana);
-        }
+    public void regresarAlCalendario() {
+        mesVista = true;
+        this.removeAll();
+        this.add(comboContainer);
+        this.add(panelMes);
+        revalidate();
+        repaint();
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e) {
+    public void actionPerformed(ActionEvent e) {
+        y = (int)year.getSelectedItem();
+        m = month.getSelectedIndex() + 1;
 
+        if (e.getSource() == year || e.getSource() == month) {
+            LocalDate primerDia = LocalDate.of(y, m, 1);
+            int diaSemana = primerDia.getDayOfWeek().getValue();
+            int duracion = primerDia.getMonth().length(primerDia.isLeapYear());
+            makeCalendar(duracion, diaSemana);
+        }
+
+        else if (e.getSource() == addOne) {
+            this.remove(addOne);
+            this.remove(regresar);
+            this.add(escritura);
+        }
+
+        else if (e.getSource() == regresar) {
+            regresarAlCalendario();
+        }
+
+        else {
+            mesVista = false;
+            presionado = (JButton)e.getSource();
+            d = Integer.parseInt(presionado.getText());
+            actualizarPaneles();
+        }
+        revalidate();
+        repaint();
     }
 }

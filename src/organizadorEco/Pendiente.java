@@ -26,8 +26,12 @@ public class Pendiente {
 
     public int getDay() { return fechaLimite.getDayOfMonth(); }
 
-    public String getFecha() {
+    public String getFechaStr() {
         return fechaLimite.toString();
+    }
+
+    public LocalDate getFecha() {
+        return fechaLimite;
     }
 
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
